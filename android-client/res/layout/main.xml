@@ -3,7 +3,7 @@
               android:orientation="vertical"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
-        >
+              android:padding="5dp">
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
@@ -17,16 +17,16 @@
         <ImageButton
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:id="@id/buttonScan" android:src="@drawable/add_barcode" android:contentDescription=""/>
+                android:id="@+id/buttonscan" android:src="@drawable/add_barcode" android:contentDescription=""/>
     </LinearLayout>
     <EditText
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/priceText" android:inputType="number"/>
     <ImageButton
-            android:layout_width="fill_parent"
+            android:layout_width="160dp"
             android:layout_height="wrap_content"
             android:id="@+id/imageButton" android:src="@android:drawable/ic_menu_search"
-            android:contentDescription=""/>
+            android:contentDescription="" android:layout_gravity="center"/>
 </LinearLayout>
 
