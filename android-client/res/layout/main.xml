@@ -13,20 +13,21 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/barcodeText" android:layout_gravity="center" android:layout_weight="2.13"
-                android:inputType="text"/>
+                android:inputType="number" android:lines="1"/>
         <ImageButton
-                android:layout_width="wrap_content"
+                android:layout_width="72dp"
                 android:layout_height="fill_parent"
-                android:id="@+id/buttonscan" android:src="@drawable/add_barcode" android:contentDescription=""/>
+                android:id="@+id/buttonscan" android:src="@drawable/add_barcode" android:contentDescription=""
+                />
     </LinearLayout>
     <EditText
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/priceText" android:inputType="number"/>
+            android:id="@+id/priceText" android:inputType="number" android:lines="1" android:numeric="decimal"/>
     <ImageButton
             android:layout_width="160dp"
             android:layout_height="wrap_content"
-            android:id="@+id/imageButton" android:src="@android:drawable/ic_menu_search"
+            android:id="@+id/buttonSearch" android:src="@android:drawable/ic_menu_search"
             android:contentDescription="" android:layout_gravity="center"/>
 </LinearLayout>
 

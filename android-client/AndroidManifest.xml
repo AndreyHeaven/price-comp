@@ -13,6 +13,13 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".PricesListActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.ALTERNATIVE" />
+            </intent-filter>
+        </activity>
+<!--
         <activity android:name="com.google.zxing.client.android.CaptureActivity"
                   android:screenOrientation="landscape"
                   android:configChanges="orientation|keyboardHidden"
@@ -27,5 +34,6 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+-->
     </application>
 </manifest>
