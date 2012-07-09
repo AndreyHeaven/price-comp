@@ -2,6 +2,7 @@ package com.artezio;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,8 @@ public class PricesListActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.prices);
+        TextView textView = (TextView) findViewById(R.id.titleLabel);
+        textView.setText(getIntent().getStringExtra(MainActivity.RESULT));
         final List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>();
         for (int i = 0; i < 10; i++) {
             list.add(new BasicNameValuePair("label "+i, "text "+i));
@@ -49,4 +52,11 @@ public class PricesListActivity extends Activity{
         };
         ((ListView)findViewById(R.id.listView)).setAdapter(adapter);
     }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+    }
+
+
 }

@@ -3,6 +3,7 @@ package com.artezio;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -11,6 +12,7 @@ import android.widget.ImageButton;
 
 public class MainActivity extends Activity {
 
+    public static final String RESULT = "SCAN_RESULT";
     private EditText text;
     private ImageButton buttonSearch;
 
@@ -25,7 +27,7 @@ public class MainActivity extends Activity {
         text.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                buttonSearch.setEnabled(text.getText().length() > 0);
+                updateScanButton();
                 return false;
             }
         });
@@ -42,11 +44,11 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
                 Intent myIntent = new Intent(MainActivity.this, PricesListActivity.class);
-                myIntent.putExtra("SCAN_RESULT", text.getText());
+                myIntent.putExtra(RESULT, text.getText().toString());
                 MainActivity.this.startActivity(myIntent);
             }
         });
-        buttonSearch.setEnabled(text.getText().length() > 0);
+        updateScanButton();
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -59,12 +61,16 @@ public class MainActivity extends Activity {
 //            else if (resultCode == RESULT_CANCELED) {
 //            }
         }
-        buttonSearch.setEnabled(text.getText().length() > 0);
+        updateScanButton();
+    }
+
+    private void updateScanButton() {
+        buttonSearch.setEnabled(!TextUtils.isEmpty(text.getText()));
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        buttonSearch.setEnabled(text.getText().length() > 0);
+        updateScanButton();
     }
 }
