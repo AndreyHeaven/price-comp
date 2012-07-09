@@ -1,13 +1,17 @@
 package com.artezio;
 
 import android.app.Activity;
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.TwoLineListItem;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.util.ArrayList;
@@ -20,41 +24,40 @@ import java.util.List;
  * Time: 15:23
  * To change this template use File | Settings | File Templates.
  */
-public class PricesListActivity extends Activity{
-    private ArrayAdapter<BasicNameValuePair> adapter;
+public class PricesListActivity extends ListActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.prices);
-        TextView textView = (TextView) findViewById(R.id.titleLabel);
-        textView.setText(getIntent().getStringExtra(MainActivity.RESULT));
-        final List<BasicNameValuePair> list = new ArrayList<BasicNameValuePair>();
-        for (int i = 0; i < 10; i++) {
-            list.add(new BasicNameValuePair("label "+i, "text "+i));
-        }
-        adapter = new ArrayAdapter<BasicNameValuePair>(this,android.R.layout.simple_list_item_2,list){
+        setTitle("====");
+        String code = getIntent().getStringExtra(MainActivity.RESULT);
+        new DownloadItemDetailsTask(this).execute(code);
+        ArrayAdapter<BasicNameValuePair> adapter = new ArrayAdapter<BasicNameValuePair>(this, android.R.layout.simple_list_item_2) {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent){
+            public View getView(int position, View convertView, ViewGroup parent) {
                 TwoLineListItem row;
-                if(convertView == null){
-                    LayoutInflater inflater = (LayoutInflater)getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    row = (TwoLineListItem)inflater.inflate(android.R.layout.simple_list_item_2, null);
-                }else{
-                    row = (TwoLineListItem)convertView;
+                if (convertView == null) {
+                    LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    row = (TwoLineListItem) inflater.inflate(android.R.layout.simple_list_item_2, null);
+                } else {
+                    row = (TwoLineListItem) convertView;
                 }
-                BasicNameValuePair data = list.get(position);
+                BasicNameValuePair data = getItem(position);
                 row.getText1().setText(data.getName());
                 row.getText2().setText(data.getValue());
 
                 return row;
             }
         };
-        ((ListView)findViewById(R.id.listView)).setAdapter(adapter);
+
+        setListAdapter(adapter);
+
+        new DownloadPrices(adapter).execute(code);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
+
         super.onNewIntent(intent);
     }
 
