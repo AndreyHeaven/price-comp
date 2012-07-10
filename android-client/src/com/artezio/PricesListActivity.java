@@ -13,6 +13,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TwoLineListItem;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,9 +32,8 @@ public class PricesListActivity extends ListActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle("====");
-        String code = getIntent().getStringExtra(MainActivity.RESULT);
-        new DownloadItemDetailsTask(this).execute(code);
+        Intent intent = getIntent();
+        String code = intent.getStringExtra(Constants.CODE);
         ArrayAdapter<BasicNameValuePair> adapter = new ArrayAdapter<BasicNameValuePair>(this, android.R.layout.simple_list_item_2) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
@@ -48,11 +50,41 @@ public class PricesListActivity extends ListActivity{
 
                 return row;
             }
+
         };
 
         setListAdapter(adapter);
 
-        new DownloadPrices(adapter).execute(code);
+        try {
+            JSONObject item = new JSONObject(intent.getStringExtra(Constants.JSON.ITEM));
+            setTitle(item.getString(Constants.JSON.NAME));
+            JSONArray jsonArray = item.getJSONArray(Constants.JSON.PRICES);
+            for(int i=0; i<jsonArray.length();i++){
+                try {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    adapter.add(new BasicNameValuePair(jsonObject.getString("price"),jsonObject.getString("date")));
+                } catch (JSONException e) {
+
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+
+    }
+
+    @Override
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        try {
+            JSONObject item = new JSONObject(getIntent().getStringExtra("item"));
+            JSONArray jsonArray = item.getJSONArray("prices");
+            JSONObject jsonObject = jsonArray.getJSONObject(position);
+
+        } catch (JSONException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
     }
 
     @Override

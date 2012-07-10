@@ -1,7 +1,11 @@
 package com.artezio;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -10,11 +14,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity  implements LocationListener {
 
-    public static final String RESULT = "SCAN_RESULT";
+
     private EditText text;
     private ImageButton buttonSearch;
+    private LocationManager locationManager;
+    private Location location;
+
 
     /**
      * Called when the activity is first created.
@@ -31,6 +38,10 @@ public class MainActivity extends Activity {
                 return false;
             }
         });
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        if (location == null)
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 500L, 250.0f, this);
         final ImageButton button = (ImageButton) findViewById(R.id.buttonscan);
         button.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
@@ -43,12 +54,42 @@ public class MainActivity extends Activity {
         buttonSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String code = text.getText().toString();
                 Intent myIntent = new Intent(MainActivity.this, PricesListActivity.class);
-                myIntent.putExtra(RESULT, text.getText().toString());
-                MainActivity.this.startActivity(myIntent);
+                myIntent.putExtra(Constants.CODE, code);
+                new DownloadItemDetailsTask(MainActivity.this,myIntent).execute(code);
+//                MainActivity.this.startActivity(myIntent);
             }
         });
         updateScanButton();
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        this.location = location;
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
