@@ -2,4 +2,7 @@
 <resources>
     <string name="app_name">Помошник покупателя</string>
     <string name="label">Загрузка данных для \r\n%1$s</string>
+    <string name="menu_refresh">Обновить</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_add">Добавить</string>
 </resources>

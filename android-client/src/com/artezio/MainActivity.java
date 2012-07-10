@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
-public class MainActivity extends Activity  implements LocationListener {
+public class MainActivity extends Activity implements LocationListener {
 
 
     private EditText text;
@@ -55,13 +55,17 @@ public class MainActivity extends Activity  implements LocationListener {
             @Override
             public void onClick(View view) {
                 String code = text.getText().toString();
-                Intent myIntent = new Intent(MainActivity.this, PricesListActivity.class);
-                myIntent.putExtra(Constants.CODE, code);
-                new DownloadItemDetailsTask(MainActivity.this,myIntent).execute(code);
+                search(code);
 //                MainActivity.this.startActivity(myIntent);
             }
         });
         updateScanButton();
+    }
+
+    private void search(String code) {
+        Intent myIntent = new Intent(this, PricesListActivity.class);
+        myIntent.putExtra(Constants.CODE, code);
+        new DownloadItemDetailsTask(this,myIntent).execute(code);
     }
 
     @Override
@@ -98,6 +102,7 @@ public class MainActivity extends Activity  implements LocationListener {
                 String contents = intent.getStringExtra("SCAN_RESULT");
                 String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
                 text.setText(contents);
+                search(contents);
             }
 //            else if (resultCode == RESULT_CANCELED) {
 //            }

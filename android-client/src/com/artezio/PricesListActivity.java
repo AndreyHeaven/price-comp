@@ -5,13 +5,8 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.TwoLineListItem;
+import android.view.*;
+import android.widget.*;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,7 +34,7 @@ public class PricesListActivity extends ListActivity{
             public View getView(int position, View convertView, ViewGroup parent) {
                 TwoLineListItem row;
                 if (convertView == null) {
-                    LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    LayoutInflater inflater = getLayoutInflater();
                     row = (TwoLineListItem) inflater.inflate(android.R.layout.simple_list_item_2, null);
                 } else {
                     row = (TwoLineListItem) convertView;
@@ -75,6 +70,12 @@ public class PricesListActivity extends ListActivity{
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.prices,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
         try {
             JSONObject item = new JSONObject(getIntent().getStringExtra("item"));
@@ -93,5 +94,33 @@ public class PricesListActivity extends ListActivity{
         super.onNewIntent(intent);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                Toast.makeText(this, "Tapped home", Toast.LENGTH_SHORT).show();
+                break;
 
+            case R.id.menu_refresh:
+                Toast.makeText(this, "Fake refreshing...", Toast.LENGTH_SHORT).show();
+                item.setActionView(new ProgressBar(getBaseContext()));
+                getWindow().getDecorView().postDelayed(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                item.setActionView(new ProgressBar(getBaseContext()));
+                            }
+                        }, 1000);
+                break;
+
+            case R.id.menu_add:
+                Toast.makeText(this, "Tapped add", Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.menu_share:
+                Toast.makeText(this, "Tapped share", Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
