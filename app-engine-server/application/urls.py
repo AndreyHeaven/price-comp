@@ -5,7 +5,7 @@ from application import views
 
 
 app.add_url_rule('/', view_func=views.home, methods=['GET',]) # Main page
-app.add_url_rule('/good', view_func=views.hernya, methods=['GET',]) # Main page
+app.add_url_rule('/hernya', view_func=views.hernya, methods=['GET',]) # Main page
 
 ## URL dispatch rules
 # App Engine warm up handler
