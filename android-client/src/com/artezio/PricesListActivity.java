@@ -1,9 +1,8 @@
 package com.artezio;
 
-import android.app.Activity;
 import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
@@ -12,15 +11,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Created with IntelliJ IDEA.
  * User: araigorodskiy
  * Date: 09.07.12
  * Time: 15:23
- * To change this template use File | Settings | File Templates.
  */
 public class PricesListActivity extends ListActivity{
 
@@ -97,12 +91,9 @@ public class PricesListActivity extends ListActivity{
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
-            case android.R.id.home:
-                Toast.makeText(this, "Tapped home", Toast.LENGTH_SHORT).show();
-                break;
-
             case R.id.menu_refresh:
                 Toast.makeText(this, "Fake refreshing...", Toast.LENGTH_SHORT).show();
+/*
                 item.setActionView(new ProgressBar(getBaseContext()));
                 getWindow().getDecorView().postDelayed(
                         new Runnable() {
@@ -111,14 +102,16 @@ public class PricesListActivity extends ListActivity{
                                 item.setActionView(new ProgressBar(getBaseContext()));
                             }
                         }, 1000);
+*/
                 break;
 
             case R.id.menu_add:
                 Toast.makeText(this, "Tapped add", Toast.LENGTH_SHORT).show();
                 break;
 
-            case R.id.menu_share:
-                Toast.makeText(this, "Tapped share", Toast.LENGTH_SHORT).show();
+            case R.id.menu_details:
+                Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(String.format(Constants.GOODSMATRIX_MOBILE, getIntent().getStringExtra(Constants.CODE))));
+                startActivity(i);
                 break;
         }
         return super.onOptionsItemSelected(item);

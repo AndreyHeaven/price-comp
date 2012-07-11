@@ -24,16 +24,14 @@ import java.io.InputStreamReader;
  * Time: 22:44
  */
 public class DownloadItemDetailsTask extends AsyncTask<String, Integer, String> {
-    public static final String URL_ITEM = "http://dl.dropbox.com/u/618578/item.json";
     private MainActivity mainActivity;
-    //    public static final String URL_ITEM = "http://dl.dropbox.com/u/618578/%s.json";
     private Intent intent;
     private ProgressDialog progress;
 
     public DownloadItemDetailsTask(MainActivity mainActivity, Intent intent) {
         progress = new ProgressDialog(mainActivity);
         progress.setIndeterminate(true);
-        progress.setMessage(mainActivity.getBaseContext().getString(R.string.label,intent.getStringExtra(Constants.CODE)));
+        progress.setMessage(mainActivity.getBaseContext().getString(R.string.label, intent.getStringExtra(Constants.CODE)));
         this.mainActivity = mainActivity;
         this.intent = intent;
     }
@@ -59,7 +57,10 @@ public class DownloadItemDetailsTask extends AsyncTask<String, Integer, String> 
     }
 
     public String downloadItemJson(String code, Location location) {
-        return downloadJson(String.format(URL_ITEM, code, location.getLatitude(), location.getLongitude(), location.getAccuracy()));
+        if (location != null)
+            return downloadJson(String.format(Constants.URL_ITEM, code, location.getLatitude(), location.getLongitude(), location.getAccuracy()));
+        else
+            return downloadJson(String.format(Constants.URL_ITEM, code, null, null, null));
     }
 
     public static String downloadJson(String url) {
