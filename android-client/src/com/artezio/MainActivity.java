@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import com.artezio.util.Utils;
 
 public class MainActivity extends Activity implements LocationListener {
 
@@ -46,8 +47,13 @@ public class MainActivity extends Activity implements LocationListener {
         button.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+                String appPackage = Utils.findTargetAppPackage(MainActivity.this, intent);
+                if (appPackage == null) {
+                    Utils.showDownloadDialog(MainActivity.this);
+                } else {
 //                intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
-                startActivityForResult(intent, 0);
+                    startActivityForResult(intent, 0);
+                }
             }
         });
         buttonSearch = (ImageButton) findViewById(R.id.buttonSearch);

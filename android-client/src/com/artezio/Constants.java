@@ -10,7 +10,9 @@ package com.artezio;
 public class Constants {
 
     public static final String CODE = "SCAN_RESULT";
-
+    public static final String GOODSMATRIX_MOBILE = "http://goodsmatrix.ru/mobile/%s.html";
+    public static final String APP_URL = "http://price-comp.appspot.com";
+    public static final String URL_ITEM = APP_URL + "/good/%s";
     static class JSON {
         public static final String NAME = "name";
         public static final String ITEM = "item";
