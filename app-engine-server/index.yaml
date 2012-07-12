@@ -27,3 +27,8 @@ indexes:
   - name: good
   - name: date
     direction: desc
+
+- kind: Price
+  properties:
+  - name: good
+  - name: price

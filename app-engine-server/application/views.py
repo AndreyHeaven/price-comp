@@ -14,7 +14,6 @@ from google.appengine.ext import db
 def json_response(values):
     return Response(dumps(values), mimetype='application/json')
 
-#@app.route('/add_price/<id>')
 def add_price():
     body = request.values
     code = body.get('code', None)
@@ -47,27 +46,27 @@ def add_price():
         return json_response({'error': 'invalid code !'})
 
 @app.route('/good/<id>')
-def fined_good(id):
+def find_good(id):
     if id is not None and len(id) > 0:
         good = db.GqlQuery("SELECT * "
                         "FROM Good "
                         "WHERE code = :1 ",
                         id)
         if good.count() > 0:
-            fined_good = good[0]
+            find_good = good[0]
 
             prices = db.GqlQuery("SELECT * "
                         "FROM Price "
                         "WHERE good = :1 "
-                        "ORDER BY date DESC LIMIT 10",
-                        fined_good.key())
+                        "ORDER BY price ASC LIMIT 10",
+                        find_good.key())
 
             array_of_prices = []
             for price in prices:
                 array_of_prices.append({'price':price.price,'lat':price.latitude,'log':price.longitude,'accu':price.accuracy,'date':price.date.strftime("%Y-%m-%d")})
             return json_response({'code':id,'prices':array_of_prices})
         else:
-            return json_response({'error': 'not fount code !'})
+            return json_response({'code':id})
     else:
            return json_response({'error': 'invalid code !'})
 
