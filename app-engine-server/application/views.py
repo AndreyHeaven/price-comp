@@ -64,7 +64,7 @@ def fined_good(id):
 
             array_of_prices = []
             for price in prices:
-                array_of_prices.append({'price':price.price,'lat':price.latitude,'log':price.longitude,'accu':price.accuracy})
+                array_of_prices.append({'price':price.price,'lat':price.latitude,'log':price.longitude,'accu':price.accuracy,'date':price.date.strftime("%Y-%m-%d")})
             return json_response({'code':id,'prices':array_of_prices})
         else:
             return json_response({'error': 'not fount code !'})
