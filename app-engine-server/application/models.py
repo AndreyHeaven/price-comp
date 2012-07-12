@@ -1,9 +1,12 @@
 from google.appengine.ext import db
 
+class Good(db.Model):
+    code = db.StringProperty()
 
-class ExampleModel(db.Model):
-    """Example Model"""
-    example_id = db.StringProperty(required=True)
-    example_title = db.StringProperty(required=True)
-    added_by = db.UserProperty()
-    timestamp = db.DateTimeProperty(auto_now_add=True)
+class Price(db.Model):
+    good = db.ReferenceProperty(Good)
+    accuracy = db.FloatProperty()
+    price = db.FloatProperty()
+    longitude = db.FloatProperty()
+    latitude = db.FloatProperty()
+    date = db.DateProperty()
