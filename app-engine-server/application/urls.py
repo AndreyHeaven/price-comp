@@ -4,13 +4,13 @@ from application import app
 from application import views
 
 
-app.add_url_rule('/', view_func=views.home, methods=['GET',]) # Main page
-app.add_url_rule('/hernya', view_func=views.hernya, methods=['GET',]) # Main page
+app.add_url_rule('/add_price/', view_func=views.add_price, methods=['PUT']) # Main page
+#app.add_url_rule('/hernya', view_func=views.hernya, methods=['GET',]) # Main page
 
 ## URL dispatch rules
 # App Engine warm up handler
 # See http://code.google.com/appengine/docs/python/config/appconfig.html#Warming_Requests
-app.add_url_rule('/_ah/warmup', 'warmup', view_func=views.warmup)
+#app.add_url_rule('/_ah/warmup', 'warmup', view_func=views.warmup)
 
 ## Error handlers
 # Handle 404 errors

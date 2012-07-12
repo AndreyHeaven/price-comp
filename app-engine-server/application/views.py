@@ -1,90 +1,83 @@
+# coding=utf-8
 import cgi
+import uuid
+import datetime
 from flask import Response
 from json import dumps
+from flask import request
+import time
 from application import app
-from application.models import Good
+from application.models import Good, Price
 from google.appengine.ext import db
 
 
 def json_response(values):
     return Response(dumps(values), mimetype='application/json')
 
-@app.route('/good/<id>')
-def save_good():
-    u = Good()
-    u.price = 17.1
-    u.latitude = 10.2
-    u.longitude = 20.4
-    u.put()
+#@app.route('/add_price/<id>')
+def add_price():
+    body = request.values
+    code = body.get('code', None)
+#    form = request.values
+    if code is not None and len(code) > 0:
+        new_price = Price()
+        persistent_good = db.GqlQuery("SELECT * "
+                        "FROM Good "
+                        "WHERE code = :1 ",
+                        code)
+        if persistent_good.count() > 0:
+            good = persistent_good[0]
+        else:
+            good = Good()
+            good.code = code
+            good.put()
+        try:
+            new_price.good = good.key()
+            new_price.price = float(body.get('price', None))
+            new_price.latitude = float(body.get('latitude', None))
+            new_price.longitude = float(body.get('longitude', None))
+            new_price.accuracy = float(body.get('accuracy', None))
+            new_price.date = datetime.date.today()
+            new_price.put()
+        except Exception:
+            return json_response({'error':'incorrect value'})
 
-    return json_response({'save': ''})
+        return json_response({'message':'OK'})
+    else:
+        return json_response({'error': 'invalid code !'})
 
 @app.route('/good/<id>')
 def fined_good(id):
+    if id is not None and len(id) > 0:
+        good = db.GqlQuery("SELECT * "
+                        "FROM Good "
+                        "WHERE code = :1 ",
+                        id)
+        if good.count() > 0:
+            fined_good = good[0]
 
-    goods = Good.gql('')
-#    db.GqlQuery("SELECT * "
-#                                    "FROM Good ")
-#                                    "WHERE ANCESTOR IS :1 "
-#                                    "ORDER BY date DESC LIMIT 10",
-#                                    guestbook_key(guestbook_name))
-    v = []
-    for good in goods:
-       v.append({'price':good.price,'lat':good.latitude,'log':good.longitude})
-    return json_response({'name':'','prices':v})
+            prices = db.GqlQuery("SELECT * "
+                        "FROM Price "
+                        "WHERE good = :1 "
+                        "ORDER BY date DESC LIMIT 10",
+                        fined_good.key())
 
-#    return json_response({"name":id,
-#    "prices":[
-#     {
-#     "price":123,
-#     "date":"2012-12-12",
-#     "log":54.2344,
-#     "lat":34.234,
-#     "r":10
-#     },
-#     {
-#     "price":123,
-#     "date":"2012-12-12",
-#     "log":54.2344,
-#     "lat":34.234,
-#     "r":10
-#     },
-#     {
-#     "price":123,
-#     "date":"2012-12-12",
-#     "log":54.2344,
-#     "lat":34.234,
-#     "r":10
-#     },
-#     {
-#     "price":123,
-#     "date":"2012-12-12",
-#     "log":54.2344,
-#     "lat":34.234,
-#     "r":10
-#     },
-#     {
-#     "price":123,
-#     "date":"2012-12-12",
-#     "log":54.2344,
-#     "lat":34.234,
-#     "r":10
-#     },
-#     {
-#     "price":123,
-#     "date":"2012-12-12",
-#     "log":54.2344,
-#     "lat":34.234,
-#     "r":10
-#     },
-#     {
-#     "price":123,
-#     "date":"2012-12-12",
-#     "log":54.2344,
-#     "lat":34.234,
-#     "r":10
-#     }
-#    ]})
+            array_of_prices = []
+            for price in prices:
+                array_of_prices.append({'price':price.price,'lat':price.latitude,'log':price.longitude,'accu':price.accuracy})
+            return json_response({'code':id,'prices':array_of_prices})
+        else:
+            return json_response({'error': 'not fount code !'})
+    else:
+           return json_response({'error': 'invalid code !'})
+
+@app.route('/')
+def main_page():
+    return """
+<html>
+заглушка
+</html>
+    """
 
 def warmup():
     """App Engine warmup handler
