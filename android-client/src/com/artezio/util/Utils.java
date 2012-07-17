@@ -3,11 +3,16 @@ package com.artezio.util;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 
 import java.util.List;
@@ -20,6 +25,8 @@ import java.util.List;
  * To change this template use File | Settings | File Templates.
  */
 public class Utils {
+
+    private static Location location;
 
     public static String findTargetAppPackage(Activity activity, Intent intent) {
         PackageManager pm = activity.getPackageManager();
@@ -57,6 +64,45 @@ public class Utils {
             public void onClick(DialogInterface dialogInterface, int i) {}
         });
         return downloadDialog.show();
+    }
+
+    public static Location getLocation(Activity activity){
+        updateLocation(activity);
+        return location;
+    }
+
+    private static void updateLocation(Activity activity) {
+        LocationManager locationManager;
+        locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
+
+        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if (location == null) {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500L, 250.0f, new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    Utils.setLocation(location);
+                }
+
+                @Override
+                public void onStatusChanged(String s, int i, Bundle bundle) {
+                    //To change body of implemented methods use File | Settings | File Templates.
+                }
+
+                @Override
+                public void onProviderEnabled(String s) {
+                    //To change body of implemented methods use File | Settings | File Templates.
+                }
+
+                @Override
+                public void onProviderDisabled(String s) {
+                    //To change body of implemented methods use File | Settings | File Templates.
+                }
+            });
+        }
+    }
+
+    private static void setLocation(Location l) {
+        location = l;
     }
 
 }

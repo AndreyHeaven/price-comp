@@ -1,10 +1,16 @@
-package com.artezio;
+package com.artezio.tasks;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
+import com.artezio.Constants;
+import com.artezio.MainActivity;
+import com.artezio.PricesListActivity;
+import com.artezio.R;
+import com.artezio.util.Utils;
+import com.google.android.maps.GeoPoint;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -46,7 +52,7 @@ public class DownloadItemDetailsTask extends AsyncTask<String, Integer, String> 
     protected String doInBackground(String... strings) {
         if (strings == null || strings.length < 1)
             return null;
-        return downloadItemJson(strings[0], mainActivity.getLocation());
+        return downloadItemJson(strings[0], mainActivity.getSelectedLocation());
     }
 
     @Override
@@ -56,9 +62,9 @@ public class DownloadItemDetailsTask extends AsyncTask<String, Integer, String> 
         mainActivity.startActivity(intent);
     }
 
-    public String downloadItemJson(String code, Location location) {
+    public String downloadItemJson(String code, GeoPoint location) {
         if (location != null)
-            return downloadJson(String.format(Constants.URL_ITEM, code, location.getLatitude(), location.getLongitude(), location.getAccuracy()));
+            return downloadJson(String.format(Constants.URL_ITEM, code, location.getLatitudeE6(), location.getLongitudeE6(), 500));
         else
             return downloadJson(String.format(Constants.URL_ITEM, code, null, null, null));
     }
@@ -80,7 +86,7 @@ public class DownloadItemDetailsTask extends AsyncTask<String, Integer, String> 
                     builder.append(line);
                 }
             } else {
-                Log.e(PricesListActivity.class.toString(), "Failed to download file");
+                Log.e(DownloadItemDetailsTask.class.toString(), "Failed to download file");
             }
         } catch (ClientProtocolException e) {
             e.printStackTrace();

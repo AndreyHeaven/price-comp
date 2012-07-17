@@ -5,4 +5,6 @@
     <string name="menu_refresh">Обновить</string>
     <string name="menu_details">Детали</string>
     <string name="menu_add">Добавить</string>
+    <string name="addPriceDialogAddButton">Add</string>
+    <string name="addPriceDialogCancelButton">Cancel</string>
 </resources>

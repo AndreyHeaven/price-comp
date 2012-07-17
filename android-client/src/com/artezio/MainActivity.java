@@ -1,11 +1,10 @@
 package com.artezio;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Point;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -13,15 +12,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import com.artezio.tasks.DownloadItemDetailsTask;
 import com.artezio.util.Utils;
+import com.google.android.maps.*;
 
-public class MainActivity extends Activity implements LocationListener {
+import java.util.List;
+
+public class MainActivity extends MapActivity {
 
 
     private EditText text;
     private ImageButton buttonSearch;
-    private LocationManager locationManager;
-    private Location location;
+    private MapView mapView;
 
 
     /**
@@ -39,10 +41,7 @@ public class MainActivity extends Activity implements LocationListener {
                 return false;
             }
         });
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        if (location == null)
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 500L, 250.0f, this);
+
         final ImageButton button = (ImageButton) findViewById(R.id.buttonscan);
         button.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
@@ -66,40 +65,52 @@ public class MainActivity extends Activity implements LocationListener {
             }
         });
         updateScanButton();
+        mapView = (MapView) findViewById(R.id.mapview);
+        Location location = Utils.getLocation(this);
+        MapController mc = mapView.getController();
+        GeoPoint p = new GeoPoint((int) (location.getLatitude() * 1E6),
+                (int) (location.getLongitude() * 1E6));
+        mc.animateTo(p);
+        mc.setZoom(16);
+        List<Overlay> overlays = mapView.getOverlays();
+        overlays.add(new MyLocationOverlay(this, mapView));
+        overlays.add(new Overlay() {
+            @Override
+            public void draw(Canvas canvas, MapView mapView, boolean b) {
+                Point pt = new Point();
+                Projection projection = mapView.getProjection();
+                GeoPoint geo = mapView.getMapCenter();
+
+                projection.toPixels(geo, pt);
+
+                Paint innerCirclePaint;
+                innerCirclePaint = new Paint();
+                innerCirclePaint.setARGB(255, 255, 255, 255);
+                innerCirclePaint.setAntiAlias(true);
+
+                float circleRadius = 15;
+
+                innerCirclePaint.setStyle(Paint.Style.FILL);
+
+                canvas.drawCircle((float) pt.x, (float) pt.y, circleRadius, innerCirclePaint);
+            }
+        });
+        mapView.invalidate();
+    }
+
+    @Override
+    protected boolean isRouteDisplayed() {
+        return true;
     }
 
     private void search(String code) {
         Intent myIntent = new Intent(this, PricesListActivity.class);
         myIntent.putExtra(Constants.CODE, code);
-        new DownloadItemDetailsTask(this,myIntent).execute(code);
+        new DownloadItemDetailsTask(this, myIntent).execute(code);
     }
 
-    @Override
-    public void onLocationChanged(Location location) {
-        this.location = location;
-    }
-
-    @Override
-    public void onStatusChanged(String s, int i, Bundle bundle) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void onProviderEnabled(String s) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    @Override
-    public void onProviderDisabled(String s) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
+    public GeoPoint getSelectedLocation() {
+        return mapView.getMapCenter();
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
