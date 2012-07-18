@@ -75,9 +75,9 @@ public class Utils {
         LocationManager locationManager;
         locationManager = (LocationManager) activity.getSystemService(Context.LOCATION_SERVICE);
 
-        location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
         if (location == null) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500L, 250.0f, new LocationListener() {
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 500L, 250.0f, new LocationListener() {
                 @Override
                 public void onLocationChanged(Location location) {
                     Utils.setLocation(location);

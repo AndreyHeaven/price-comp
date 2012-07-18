@@ -136,8 +136,10 @@ public class PricesListActivity extends ListActivity {
 //        if (item == null)
 //            return;
         String code = getIntent().getStringExtra(Constants.CODE);
-        DialogFragment newFragment = AddPriceDialogFragment.newInstance(code);
-        newFragment.show(getFragmentManager(), "dialog");
+        Intent intent = new Intent(this, AddPriceDialogFragment.class);
+        startActivity(intent);
+//        DialogFragment newFragment = AddPriceDialogFragment.newInstance(code);
+//        newFragment.show(getFragmentManager(), "dialog");
     }
 
     /*private void addNewPrice() {

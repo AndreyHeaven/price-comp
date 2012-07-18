@@ -7,4 +7,6 @@
     <string name="menu_add">Добавить</string>
     <string name="addPriceDialogAddButton">Add</string>
     <string name="addPriceDialogCancelButton">Cancel</string>
+    <string name="newPriceAddButton">Add</string>
+    <string name="newPriceCancelButton">Cancel</string>
 </resources>

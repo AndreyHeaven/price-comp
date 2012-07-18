@@ -2,14 +2,11 @@ package com.artezio.tasks;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.util.Log;
 import com.artezio.Constants;
 import com.artezio.MainActivity;
-import com.artezio.PricesListActivity;
 import com.artezio.R;
-import com.artezio.util.Utils;
 import com.google.android.maps.GeoPoint;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;

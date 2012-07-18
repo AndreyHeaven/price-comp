@@ -37,6 +37,13 @@ public class Price extends JSONObject implements Serializable{
 
         }
     }
+    public void setStoreKey(String store){
+        try {
+            put(Constants.JSON.STORE,store);
+        } catch (JSONException e) {
+
+        }
+    }
 
     public Double getLongitude() {
         try {

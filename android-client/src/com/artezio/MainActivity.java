@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ZoomControls;
 import com.artezio.tasks.DownloadItemDetailsTask;
 import com.artezio.util.Utils;
 import com.google.android.maps.*;
@@ -23,7 +24,8 @@ public class MainActivity extends MapActivity {
 
     private EditText text;
     private ImageButton buttonSearch;
-    private MapView mapView;
+//    private MapView mapView;
+//    private MyLocationOverlay myLocationOverlay;
 
 
     /**
@@ -65,15 +67,29 @@ public class MainActivity extends MapActivity {
             }
         });
         updateScanButton();
-        mapView = (MapView) findViewById(R.id.mapview);
+        /*mapView = (MapView) findViewById(R.id.mapview);
+        final MapController mc = mapView.getController();
+        final ZoomControls viewById = (ZoomControls) findViewById(R.id.zoomControls);
+        viewById.setOnZoomInClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mc.zoomIn();
+            }
+        });
+        viewById.setOnZoomOutClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mc.zoomOut();
+            }
+        });
         Location location = Utils.getLocation(this);
-        MapController mc = mapView.getController();
         GeoPoint p = new GeoPoint((int) (location.getLatitude() * 1E6),
                 (int) (location.getLongitude() * 1E6));
         mc.animateTo(p);
         mc.setZoom(16);
         List<Overlay> overlays = mapView.getOverlays();
-        overlays.add(new MyLocationOverlay(this, mapView));
+        myLocationOverlay = new MyLocationOverlay(this, mapView);
+        overlays.add(myLocationOverlay);
         overlays.add(new Overlay() {
             @Override
             public void draw(Canvas canvas, MapView mapView, boolean b) {
@@ -95,7 +111,19 @@ public class MainActivity extends MapActivity {
                 canvas.drawCircle((float) pt.x, (float) pt.y, circleRadius, innerCirclePaint);
             }
         });
-        mapView.invalidate();
+        mapView.invalidate();*/
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        myLocationOverlay.enableMyLocation();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+//        myLocationOverlay.disableMyLocation();
     }
 
     @Override
@@ -110,7 +138,13 @@ public class MainActivity extends MapActivity {
     }
 
     public GeoPoint getSelectedLocation() {
-        return mapView.getMapCenter();
+        Location location = Utils.getLocation(this);
+        GeoPoint p = null;
+        if (location != null)
+        p = new GeoPoint((int) (location.getLatitude() * 1E6),
+                (int) (location.getLongitude() * 1E6));
+        return p;
+//        return mapView.getMapCenter();
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
