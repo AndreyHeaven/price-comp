@@ -6,10 +6,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.*;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.Toast;
-import android.widget.TwoLineListItem;
+import android.widget.*;
 import com.artezio.model.Item;
 import com.artezio.model.Price;
 import org.apache.http.message.BasicNameValuePair;
@@ -23,6 +20,8 @@ import java.util.List;
  * Time: 15:23
  */
 public class PricesListActivity extends ListActivity {
+
+    private List<Price> prices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,16 +47,13 @@ public class PricesListActivity extends ListActivity {
 
         };
 
-        setListAdapter(adapter);
-
-        Item item = null;
         try {
-            item = new Item(intent.getStringExtra(Constants.JSON.ITEM));
+            Item item = new Item(intent.getStringExtra(Constants.JSON.ITEM));
             if (item.getName() == null)
                 setTitle(item.getCode());
             else
                 setTitle(item.getName());
-            List<Price> prices = item.getPrices();
+            prices = item.getPrices();
             if (prices != null)
                 for (Price price : prices) {
                     adapter.add(new BasicNameValuePair(price.getPrice().toString(), price.getDate()));
@@ -65,6 +61,10 @@ public class PricesListActivity extends ListActivity {
         } catch (JSONException e) {
             //
         }
+
+        setListAdapter(adapter);
+
+
 
 
     }
@@ -77,10 +77,9 @@ public class PricesListActivity extends ListActivity {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        Item item = getItem();
-        if (item == null)
+        if (prices == null)
             return;
-        Price price = item.getPrices().get(position);
+        Price price = prices.get(position);
         if (price == null || price.getLatitude() == null || price.getLongitude() == null)
             return;
         Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("geo:" + price.getLatitude() + "," + price.getLongitude()+"?z=18"));

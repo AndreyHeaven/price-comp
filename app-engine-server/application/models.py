@@ -1,13 +1,10 @@
 from google.appengine.ext import db
-
+import geo.geomodel
 class Good(db.Model):
     code = db.StringProperty()
 
-class Store(db.Model):
+class Store(geo.geomodel.GeoModel):
     name = db.StringProperty()
-    pt = db.GeoPtProperty()
-    longitude = db.IntegerProperty()
-    latitude = db.IntegerProperty()
     date = db.DateProperty()
 
 class Price(db.Model):

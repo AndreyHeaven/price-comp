@@ -11,15 +11,16 @@ from google.appengine.ext import db
 def json_response(values):
     return Response(dumps(values), mimetype='application/json')
 
+@app.route('/price/', methods=['PUT'])
 def add_price():
     body = request.values
     code = body.get('code', None)
     if code is not None and len(code) > 0:
         new_price = Price()
         persistent_good = db.GqlQuery("SELECT * "
-                        "FROM Good "
-                        "WHERE code = :1 ",
-                        code)
+                                      "FROM Good "
+                                      "WHERE code = :1 ",
+                                      code)
         if persistent_good.count() > 0:
             good = persistent_good[0]
         else:
@@ -27,12 +28,15 @@ def add_price():
             good.code = code
             good.put()
         try:
-            store = Store()
-            store.name = body.get('name', None)
-            store.latitude = int(body.get('latitude', None))
-            store.longitude = int(body.get('longitude', None))
-            store.accuracy = int(body.get('accuracy', None))
-            store.put()
+            latitude = int(body.get('lat', None))
+            longitude = int(body.get('lon', None))
+            store = Store.get_by_id()
+#            Store(location = db.GeoPt(int(latitude)/1e6,int(longitude)/1e6),
+#                          name = body.get('name', None),
+#                          accuracy = int(body.get('accuracy', None)))
+
+#            store.update_location()
+#            store.put()
 
             new_price.good = good.key()
             new_price.price = float(body.get('price', None))
@@ -43,93 +47,95 @@ def add_price():
         except Exception:
             return return_error('incorrect value')
 
-        return json_response({'message':'OK'})
+        return json_response({'message': 'OK'})
     else:
         return return_error('invalid code !')
 
 
-@app.route('/find_good/?id=<id>&lat=<lat>&long=<long>&acc=<acc>', methods = ['GET'])
-def find_good(id, lat, long, acc):
-    if id is not None and len(id) > 0:
+@app.route('/good/<barcode>/<lat>/<long>/<acc>', methods=['GET'])
+def find_good(barcode, lat, long, acc):
+    if barcode is not None and len(barcode) > 0:
         good = db.GqlQuery("SELECT * "
-                        "FROM Good "
-                        "WHERE code = :1 ",
-                        id)
+                           "FROM Good "
+                           "WHERE code = :1 ",
+                           barcode)
         if good.count() > 0:
             find_good = good[0]
 
-            stores = get_array_of_stores(lat,long,acc)
-            if stores is not None:
-
+            stores = get_array_of_stores(lat, long, acc)
+            if len(stores):
                 prices = db.GqlQuery("SELECT * "
-                            "FROM Price "
-                            "WHERE good = :1 AND"
-                            "store in( :2 )"
-                            "ORDER BY price ASC LIMIT 10",
-                            find_good.key(), stores)
+                                     "FROM Price "
+                                     "WHERE good = :1 AND "
+                                     "store in( :2 ) "
+                                     "ORDER BY price ASC LIMIT 10",
+                                     find_good.key(), stores)
 
                 array_of_prices = []
                 for price in prices:
-                    array_of_prices.append({'price':price.price,'date':price.date.strftime("%Y-%m-%d"),'store':price.store.name,'lat':price.store.latitude,'log':price.store.longitude})
-                return json_response({'code':id,'prices':array_of_prices})
+                    array_of_prices.append(
+                            {'price': price.price, 'date': price.date.strftime("%Y-%m-%d"), 'store': price.store.name,
+                             'lat': price.store.location.lat, 'lon': price.store.location.lon})
+                return json_response({'code': barcode, 'prices': array_of_prices})
             else:
                 return return_error('stores not found !')
         else:
-            return json_response({'code':id})
+            return json_response({'code': barcode})
     else:
         return return_error('invalid code !')
 
 
-@app.route('/stores/?lat=<lat>&long=<long>&acc=<acc>', methods = ['GET'])
-def get_stores(lat,long,acc):
-    if lat & long is not None and len(id) > 0:
-        if acc is None:
-            acc = 500 #Hack
-        stores = get_array_of_stores(lat,long,acc)
+@app.route('/stores/<lat>/<lon>/<acc>', methods=['GET']) #?lat=<lat>&long=<long>&acc=<acc>
+def get_stores(lat, lon, acc = 500):
+    if lat is not None and lon is not None:
+        stores = get_array_of_stores(lat, lon, acc)
         if stores is not None:
             array_of_stores = []
-            for find_stores in stores[0]:
-                array_of_stores.append({'name':find_stores.price,'lat':find_stores.latitude,'log':find_stores.longitude,'date':find_stores.date.strftime("%Y-%m-%d")})
-            return json_response({'stores':array_of_stores})
+            for find_stores in stores:
+                array_of_stores.append(
+                        {'id':find_stores.key().id(),'name': find_stores.name, 'lat': find_stores.location.lat*1e6, 'lon': find_stores.location.lon*1e6,
+                         'date': find_stores.date.strftime("%Y-%m-%d")})
+            return json_response({'stores': array_of_stores})
         else:
             return return_error('stores not found !')
     else:
         return return_error('invalid lat or long !')
 
 
+@app.route('/store/', methods=['PUT'])
 def add_store():
     body = request.values
-    stores = get_array_of_stores(body.get('latitude', None), body.get('longitude', None), body.get('accuracy', None))
+    stores = get_array_of_stores(body.get('lat', None), body.get('lon', None))
     for store in stores:
         if store.name == body.get('name'):
             return return_error('can\'t add store, store with name already exist!')
     try:
-        store = Store()
-        store.name = body.get('name', None)
-        store.latitude = body.get('latitude', None)
-        store.longitude = body.get('longitude', None)
-        store.date = datetime.date.today()
+        latitude = body.get('lat', None)
+        longitude = body.get('lon', None)
+        store = Store(location=db.GeoPt(int(latitude) / 1e6, int(longitude) / 1e6),
+                      name=body.get('name', None),
+                      date=datetime.date.today())
+        store.update_location()
         store.put()
     except Exception:
         return return_error('incorrect value')
-    return json_response({'message':'OK'})
+    return json_response({'message': 'OK'})
 
-def get_array_of_stores(lat,long,acc):
+
+def get_array_of_stores(lat, long, acc = 500):
     lat = int(lat)
     long = int(long)
     acc = int(acc)
-    stores = db.GqlQuery("""SELECT *
-                           FROM Store
-                           WHERE latitude > :1 AND
-                           latitude < :2 AND
-                           longitude > :3 AND
-                           longitude < :4
-                           ORDER BY name ASC LIMIT 10""",
-                           lat-acc, lat+acc, long-acc, long+acc)
+
+    stores = Store.proximity_fetch(Store.all(), db.GeoPt(lat / 1e6, long / 1e6),
+                                   max_results=10,
+                                   max_distance=acc + 1000)
     return stores
+
 
 def return_error(error_message):
     return json_response({'error': error_message})
+
 
 @app.route('/')
 def main_page():
@@ -138,6 +144,7 @@ def main_page():
 заглушка
 </html>
     """
+
 
 def warmup():
     """App Engine warmup handler

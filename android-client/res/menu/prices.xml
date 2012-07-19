@@ -22,7 +22,7 @@
           android:showAsAction="always" />
     <item android:id="@+id/menu_add"
           android:title="@string/menu_add"
-          android:icon="@drawable/ic_action_search"
+          android:icon="@android:drawable/ic_menu_add"
           android:orderInCategory="0"
           android:showAsAction="always" />
 

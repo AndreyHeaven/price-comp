@@ -37,6 +37,12 @@
                 <category android:name="android.intent.category.ALTERNATIVE" />
             </intent-filter>
         </activity>
+        <activity android:name=".AddStoreActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.ALTERNATIVE" />
+            </intent-filter>
+        </activity>
 <!--
         <activity android:name="com.google.zxing.client.android.CaptureActivity"
                   android:screenOrientation="landscape"

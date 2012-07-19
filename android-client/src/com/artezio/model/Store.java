@@ -1,6 +1,7 @@
 package com.artezio.model;
 
 import com.artezio.Constants;
+import com.google.android.maps.GeoPoint;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -35,6 +36,23 @@ public class Store extends JSONObject {
             return getString(Constants.JSON.NAME);
         } catch (JSONException e) {
             return null;
+        }
+    }
+
+    public void setName(String name){
+        try {
+            put(Constants.JSON.NAME,name);
+        } catch (JSONException e) {
+            //
+        }
+    }
+
+    public void setPoint(GeoPoint point) {
+        try {
+            put(Constants.JSON.LONGITUDE, point.getLongitudeE6());
+            put(Constants.JSON.LATITUDE, point.getLatitudeE6());
+        } catch (JSONException e) {
+            //
         }
     }
 }
