@@ -4,7 +4,8 @@ from application import app
 from application import views
 
 
-app.add_url_rule('/add_price/', view_func=views.add_price, methods=['PUT']) # Main page
+app.add_url_rule('/add_price/', view_func=views.add_price, methods=['PUT'])
+app.add_url_rule('/add_store/', view_func=views.add_store, methods=['PUT'])
 #app.add_url_rule('/hernya', view_func=views.hernya, methods=['GET',]) # Main page
 
 ## URL dispatch rules
