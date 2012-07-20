@@ -7,6 +7,7 @@ import android.util.Log;
 import com.artezio.Constants;
 import com.artezio.MainActivity;
 import com.artezio.R;
+import com.artezio.net.JsonHelper;
 import com.google.android.maps.GeoPoint;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -34,7 +35,7 @@ public class DownloadItemDetailsTask extends AsyncTask<String, Integer, String> 
     public DownloadItemDetailsTask(MainActivity mainActivity, Intent intent) {
         progress = new ProgressDialog(mainActivity);
         progress.setIndeterminate(true);
-        progress.setMessage(mainActivity.getBaseContext().getString(R.string.label, intent.getStringExtra(Constants.CODE)));
+        progress.setMessage(mainActivity.getResources().getString(R.string.label, intent.getStringExtra(Constants.CODE)));
         this.mainActivity = mainActivity;
         this.intent = intent;
     }
@@ -61,36 +62,11 @@ public class DownloadItemDetailsTask extends AsyncTask<String, Integer, String> 
 
     public String downloadItemJson(String code, GeoPoint location) {
         if (location != null)
-            return downloadJson(String.format(Constants.URL_ITEM, code, location.getLatitudeE6(), location.getLongitudeE6(), 500));
+            return JsonHelper.get(String.format(Constants.URL_ITEM, code, location.getLatitudeE6(), location.getLongitudeE6(), 500));
         else
-            return downloadJson(String.format(Constants.URL_ITEM, code, null, null, null));
+            return JsonHelper.get(String.format(Constants.URL_ITEM, code, null, null, null));
     }
 
-    public static String downloadJson(String url) {
-        StringBuilder builder = new StringBuilder();
-        HttpClient client = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet(url);
-        try {
-            HttpResponse response = client.execute(httpGet);
-            StatusLine statusLine = response.getStatusLine();
-            int statusCode = statusLine.getStatusCode();
-            if ((statusCode / 100) == 2) {
-                HttpEntity entity = response.getEntity();
-                InputStream content = entity.getContent();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(content));
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    builder.append(line);
-                }
-            } else {
-                Log.e(DownloadItemDetailsTask.class.toString(), "Failed to download file");
-            }
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return builder.toString();
-    }
+
 
 }

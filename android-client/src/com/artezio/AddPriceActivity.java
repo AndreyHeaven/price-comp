@@ -1,19 +1,14 @@
 package com.artezio;
 
 import android.app.Activity;
-import android.app.DialogFragment;
 import android.content.Intent;
-import android.location.Location;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import com.artezio.model.Price;
+import com.artezio.model.Store;
 import com.artezio.tasks.AddPriceTask;
-import com.artezio.util.Utils;
 import org.json.JSONException;
 
 /**
@@ -21,7 +16,9 @@ import org.json.JSONException;
  * Date: 12.07.12
  * Time: 12:36
  */
-public class AddPriceDialogFragment extends Activity {
+public class AddPriceActivity extends Activity {
+
+    private Button buttonChangeStore;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,11 +36,11 @@ public class AddPriceDialogFragment extends Activity {
 //
 //                }
                 p.setPrice(Double.parseDouble(price.getText().toString()));
-//                Location l = Utils.getLocation(AddPriceDialogFragment.this);
+//                Location l = Utils.getLocation(AddPriceActivity.this);
 //                p.setLatitude(l.getLatitude());
 //                p.setLongitude(l.getLongitude());
                 p.setStoreKey("");
-                new AddPriceTask(AddPriceDialogFragment.this).execute(p);
+                new AddPriceTask(AddPriceActivity.this).execute(p);
                 finish();
             }
         });
@@ -53,19 +50,27 @@ public class AddPriceDialogFragment extends Activity {
                 finish();
             }
         });
-        Button buttonChangeStore = (Button) findViewById(R.id.buttonChangeStore);
+        buttonChangeStore = (Button) findViewById(R.id.buttonChangeStore);
         buttonChangeStore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent =new Intent(AddPriceDialogFragment.this, StoreSelectDialogFragment.class);
-                startActivity(intent);
+                Intent intent = new Intent(AddPriceActivity.this, StoreSelectActivity.class);
+                startActivityForResult(intent,0);
             }
         });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        String stringExtra = data.getStringExtra(Constants.STORE);
         super.onActivityResult(requestCode, resultCode, data);
+        String stringExtra = data.getStringExtra(Constants.STORE);
+
+        try {
+            Store store = new Store(stringExtra);
+            buttonChangeStore.setText(store.getName());
+        } catch (JSONException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
     }
 }

@@ -95,7 +95,7 @@ def get_stores(lat, lon, acc = 500):
                 array_of_stores.append(
                         {'id':find_stores.key().id(),'name': find_stores.name, 'lat': find_stores.location.lat*1e6, 'lon': find_stores.location.lon*1e6,
                          'date': find_stores.date.strftime("%Y-%m-%d")})
-            return json_response({'stores': array_of_stores})
+            return json_response(array_of_stores)
         else:
             return return_error('stores not found !')
     else:

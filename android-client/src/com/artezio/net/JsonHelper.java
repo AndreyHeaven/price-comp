@@ -13,9 +13,13 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -37,7 +41,9 @@ public class JsonHelper {
 
     public static String put(String url, Context context, JSONObject o, String... keys) {
         StringBuilder builder = new StringBuilder();
-        HttpClient client = new DefaultHttpClient();
+        HttpParams params = new BasicHttpParams();
+        HttpProtocolParams.setContentCharset(params, "UTF_8");
+        HttpClient client = new DefaultHttpClient(params);
         HttpPut httpPut = new HttpPut(Constants.APP_URL+url);
         List<NameValuePair> pairs = new ArrayList<NameValuePair>();
         Account[] accounts= AccountManager.get(context).getAccountsByType("com.google");
@@ -53,6 +59,7 @@ public class JsonHelper {
         }
         if (email != null)
             pairs.add(new BasicNameValuePair("user", email));
+
         try {
             httpPut.setEntity(new UrlEncodedFormEntity(pairs));
             HttpResponse response = client.execute(httpPut);
@@ -76,4 +83,32 @@ public class JsonHelper {
         }
         return builder.toString();
     }
+
+    public static String get(String url) {
+        StringBuilder builder = new StringBuilder();
+        HttpClient client = new DefaultHttpClient();
+        HttpGet httpGet = new HttpGet(Constants.APP_URL + url);
+        try {
+            HttpResponse response = client.execute(httpGet);
+            StatusLine statusLine = response.getStatusLine();
+            int statusCode = statusLine.getStatusCode();
+            if ((statusCode / 100) == 2) {
+                HttpEntity entity = response.getEntity();
+                InputStream content = entity.getContent();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(content));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                }
+            } else {
+                Log.e(JsonHelper.class.toString(), "Failed to download file");
+            }
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return builder.toString();
+    }
+
 }

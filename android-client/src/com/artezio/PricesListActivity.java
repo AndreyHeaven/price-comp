@@ -1,6 +1,5 @@
 package com.artezio;
 
-import android.app.DialogFragment;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.net.Uri;
@@ -11,6 +10,7 @@ import com.artezio.model.Item;
 import com.artezio.model.Price;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -20,47 +20,24 @@ import java.util.List;
  * Time: 15:23
  */
 public class PricesListActivity extends ListActivity {
-
-    private List<Price> prices;
+    private JsonAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         String code = intent.getStringExtra(Constants.CODE);
-        ArrayAdapter<BasicNameValuePair> adapter = new ArrayAdapter<BasicNameValuePair>(this, android.R.layout.simple_list_item_2) {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                TwoLineListItem row;
-                if (convertView == null) {
-                    LayoutInflater inflater = getLayoutInflater();
-                    row = (TwoLineListItem) inflater.inflate(android.R.layout.simple_list_item_2, null);
-                } else {
-                    row = (TwoLineListItem) convertView;
-                }
-                BasicNameValuePair data = getItem(position);
-                row.getText1().setText(data.getName());
-                row.getText2().setText(data.getValue());
-
-                return row;
-            }
-
-        };
-
         try {
             Item item = new Item(intent.getStringExtra(Constants.JSON.ITEM));
             if (item.getName() == null)
                 setTitle(item.getCode());
             else
                 setTitle(item.getName());
-            prices = item.getPrices();
-            if (prices != null)
-                for (Price price : prices) {
-                    adapter.add(new BasicNameValuePair(price.getPrice().toString(), price.getDate()));
-                }
+            adapter = new JsonAdapter(this, item.getJSONArray(Constants.JSON.PRICES), R.layout.price_list_item,new String[]{Constants.JSON.PRICE,Constants.JSON.STORE,Constants.JSON.DATE}, new int[]{R.id.priceTextView,R.id.storeTextView,R.id.dateTextView});
         } catch (JSONException e) {
             //
         }
+
 
         setListAdapter(adapter);
 
@@ -77,13 +54,15 @@ public class PricesListActivity extends ListActivity {
 
     @Override
     protected void onListItemClick(ListView l, View v, int position, long id) {
-        if (prices == null)
-            return;
-        Price price = prices.get(position);
-        if (price == null || price.getLatitude() == null || price.getLongitude() == null)
-            return;
-        Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("geo:" + price.getLatitude() + "," + price.getLongitude()+"?z=18"));
-        startActivity(intent);
+        try {
+            Price price = new Price((JSONObject)adapter.getItem(position));
+            if (price.getLatitude() == null || price.getLongitude() == null)
+                return;
+            Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("geo:" + price.getLatitude() + "," + price.getLongitude()+"?z=18"));
+            startActivity(intent);
+        } catch (JSONException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
 
     }
 
@@ -93,12 +72,6 @@ public class PricesListActivity extends ListActivity {
         } catch (JSONException e) {
             return null;
         }
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-
-        super.onNewIntent(intent);
     }
 
     @Override
@@ -131,55 +104,8 @@ public class PricesListActivity extends ListActivity {
     }
 
     private void addNewPrice() {
-//        Item item = getItem();
-//        if (item == null)
-//            return;
         String code = getIntent().getStringExtra(Constants.CODE);
-        Intent intent = new Intent(this, AddPriceDialogFragment.class);
+        Intent intent = new Intent(this, AddPriceActivity.class);
         startActivity(intent);
-//        DialogFragment newFragment = AddPriceDialogFragment.newInstance(code);
-//        newFragment.show(getFragmentManager(), "dialog");
     }
-
-    /*private void addNewPrice() {
-        Item item = getItem();
-        if (item == null)
-            return;
-        Context mContext = getApplicationContext();
-        final Dialog dialog = new Dialog(mContext);
-
-        dialog.setContentView(R.layout.addprice);
-        dialog.setTitle("Custom Dialog");
-
-        TextView text = (TextView) dialog.findViewById(R.id.addPriceNameLabel);
-        text.setText(item.getName());
-
-        final EditText price = (EditText) dialog.findViewById(R.id.addPriceDialogPrice);
-        Button addButton = (Button) dialog.findViewById(R.id.addPriceDialogAddButton);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Price p = new Price();
-                try {
-                    p.put(Constants.JSON.ITEM,getIntent().getStringExtra(Constants.CODE));
-                } catch (JSONException e) {
-                    //
-                }
-                p.setPrice(Double.parseDouble(price.getText().toString()));
-                Location l = Utils.getLocation(PricesListActivity.this);
-                p.setLatitude(l.getLatitude());
-                p.setLongitude(l.getLongitude());
-                new AddPriceTask().execute(p);
-            }
-        });
-        Button cancelButton = (Button) dialog.findViewById(R.id.addPriceDialogAddButton);
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialog.dismiss();
-            }
-        });
-        dialog.show();
-    }*/
 }

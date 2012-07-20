@@ -1,3 +1,4 @@
+# coding=utf-8
 __author__ = 'araigorodskiy'
 import urllib
 import urllib2
@@ -7,12 +8,12 @@ app_url = 'http://localhost:8080/'
 def add_store():
     body = {
     #        'code':'666'
-    'name':'test'
+    'name':'Магнит'
     #        ,'price':'30'
     ,'accuracy':'20'
-    ,'longitude':46006471
-    ,'latitude':51548459}
-    request = urllib2.Request('http://localhost:8080/add_store/', data=urllib.urlencode(body))
+    ,'lon':46006471
+    ,'lat':51548459}
+    request = urllib2.Request('http://localhost:8080/store/', data=urllib.urlencode(body))
     #request.add_header('Content-Type', 'your/contenttype')
     request.get_method = lambda: 'PUT'
     url = opener.open(request)
@@ -28,4 +29,4 @@ def get_stores():
 
 # Use App Engine app caching
 if __name__ == "__main__":
-    get_stores()
+    add_store()
