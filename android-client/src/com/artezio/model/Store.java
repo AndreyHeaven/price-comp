@@ -26,7 +26,7 @@ public class Store extends JSONObject {
 
     public String getKey(){
         try {
-            return getString(Constants.JSON.KEY);
+            return getString(Constants.JSON.ID);
         } catch (JSONException e) {
             return null;
         }

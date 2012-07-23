@@ -42,9 +42,10 @@ public class JsonHelper {
     public static String put(String url, Context context, JSONObject o, String... keys) {
         StringBuilder builder = new StringBuilder();
         HttpParams params = new BasicHttpParams();
-        HttpProtocolParams.setContentCharset(params, "UTF_8");
+        HttpProtocolParams.setContentCharset(params, "utf-8");
         HttpClient client = new DefaultHttpClient(params);
         HttpPut httpPut = new HttpPut(Constants.APP_URL+url);
+        httpPut.setHeader("charset", "utf-8");
         List<NameValuePair> pairs = new ArrayList<NameValuePair>();
         Account[] accounts= AccountManager.get(context).getAccountsByType("com.google");
         String email = null;

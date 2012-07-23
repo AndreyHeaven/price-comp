@@ -9,6 +9,7 @@
     <string name="addPriceDialogCancelButton">Cancel</string>
     <string name="newPriceAddButton">Add</string>
     <string name="newPriceCancelButton">Cancel</string>
+    <string name="addPriceSelectStore">Select</string>
 
     <string-array name="times_array">
         <item>5 мин</item>

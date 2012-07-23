@@ -1,4 +1,5 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
+import logging
 import datetime
 from flask import Response
 from json import dumps
@@ -28,17 +29,12 @@ def add_price():
             good.code = code
             good.put()
         try:
-            latitude = int(body.get('lat', None))
-            longitude = int(body.get('lon', None))
-            store = Store.get_by_id()
-#            Store(location = db.GeoPt(int(latitude)/1e6,int(longitude)/1e6),
-#                          name = body.get('name', None),
-#                          accuracy = int(body.get('accuracy', None)))
-
-#            store.update_location()
-#            store.put()
-
+            storeId = int(body.get('id', None))
+            if storeId is None:
+                return return_error('please select store')
+            store = Store.get_by_id(storeId)
             new_price.good = good.key()
+            new_price.user = body.get('user', None)
             new_price.price = float(body.get('price', None))
             new_price.date = datetime.date.today()
             new_price.store = store.key()
@@ -85,7 +81,7 @@ def find_good(barcode, lat, long, acc):
         return return_error('invalid code !')
 
 
-@app.route('/stores/<lat>/<lon>/<acc>', methods=['GET']) #?lat=<lat>&long=<long>&acc=<acc>
+@app.route('/store/<lat>/<lon>/<acc>', methods=['GET']) #?lat=<lat>&long=<long>&acc=<acc>
 def get_stores(lat, lon, acc = 500):
     if lat is not None and lon is not None:
         stores = get_array_of_stores(lat, lon, acc)
@@ -105,15 +101,17 @@ def get_stores(lat, lon, acc = 500):
 @app.route('/store/', methods=['PUT'])
 def add_store():
     body = request.values
-    stores = get_array_of_stores(body.get('lat', None), body.get('lon', None))
+    latitude = body.get('lat', None)
+    longitude = body.get('lon', None)
+    name=body.get('name', None)
+    logging.debug("Store name %s and encoding %s", name, str(type(name)))
+    stores = get_array_of_stores(latitude, longitude)
     for store in stores:
         if store.name == body.get('name'):
             return return_error('can\'t add store, store with name already exist!')
     try:
-        latitude = body.get('lat', None)
-        longitude = body.get('lon', None)
         store = Store(location=db.GeoPt(int(latitude) / 1e6, int(longitude) / 1e6),
-                      name=body.get('name', None),
+                      name=name,
                       date=datetime.date.today())
         store.update_location()
         store.put()

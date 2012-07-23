@@ -5,6 +5,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -73,9 +74,12 @@ public class AddStoreActivity extends MapActivity {
             @Override
             public void onClick(View view) {
                 Store store = new Store();
-                store.setName(storeName.getText().toString());
+                String name = storeName.getText().toString();
+                Log.d(AddStoreActivity.class.getName(), name);
+                store.setName(name);
                 store.setPoint(mapView.getMapCenter());
                 new AddStoreTask(AddStoreActivity.this).execute(store);
+                finish();
             }
         });
 

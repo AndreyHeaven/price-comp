@@ -34,6 +34,7 @@ public class MainActivity extends MapActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Utils.getLocation(this);
         setContentView(R.layout.main);
         text = ((EditText) findViewById(R.id.barcodeText));
         text.setOnKeyListener(new View.OnKeyListener() {
@@ -63,67 +64,19 @@ public class MainActivity extends MapActivity {
             public void onClick(View view) {
                 String code = text.getText().toString();
                 search(code);
-//                MainActivity.this.startActivity(myIntent);
             }
         });
         updateScanButton();
-        /*mapView = (MapView) findViewById(R.id.mapview);
-        final MapController mc = mapView.getController();
-        final ZoomControls viewById = (ZoomControls) findViewById(R.id.zoomControls);
-        viewById.setOnZoomInClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mc.zoomIn();
-            }
-        });
-        viewById.setOnZoomOutClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mc.zoomOut();
-            }
-        });
-        Location location = Utils.getLocation(this);
-        GeoPoint p = new GeoPoint((int) (location.getLatitude() * 1E6),
-                (int) (location.getLongitude() * 1E6));
-        mc.animateTo(p);
-        mc.setZoom(16);
-        List<Overlay> overlays = mapView.getOverlays();
-        myLocationOverlay = new MyLocationOverlay(this, mapView);
-        overlays.add(myLocationOverlay);
-        overlays.add(new Overlay() {
-            @Override
-            public void draw(Canvas canvas, MapView mapView, boolean b) {
-                Point pt = new Point();
-                Projection projection = mapView.getProjection();
-                GeoPoint geo = mapView.getMapCenter();
-
-                projection.toPixels(geo, pt);
-
-                Paint innerCirclePaint;
-                innerCirclePaint = new Paint();
-                innerCirclePaint.setARGB(255, 255, 255, 255);
-                innerCirclePaint.setAntiAlias(true);
-
-                float circleRadius = 15;
-
-                innerCirclePaint.setStyle(Paint.Style.FILL);
-
-                canvas.drawCircle((float) pt.x, (float) pt.y, circleRadius, innerCirclePaint);
-            }
-        });
-        mapView.invalidate();*/
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-//        myLocationOverlay.enableMyLocation();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-//        myLocationOverlay.disableMyLocation();
     }
 
     @Override
