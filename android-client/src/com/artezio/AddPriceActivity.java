@@ -38,7 +38,6 @@ public class AddPriceActivity extends Activity {
         Button button = (Button) findViewById(R.id.addPriceDialogAddButton);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                // When button is clicked, call up to owning activity.
                 Price p = new Price();
                 try {
                     p.put(Constants.JSON.CODE, getIntent().getStringExtra(Constants.JSON.CODE));
@@ -47,9 +46,6 @@ public class AddPriceActivity extends Activity {
                 }
 
                 p.setPrice(Double.parseDouble(price.getText().toString()));
-//                Location l = Utils.getLocation(AddPriceActivity.this);
-//                p.setLatitude(l.getLatitude());
-//                p.setLongitude(l.getLongitude());
                 updateButtonLabel();
                 Store actualStore = getActualStore();
                 if (actualStore != null)

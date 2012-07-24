@@ -23,7 +23,7 @@ public abstract class AbstractProgressAsyncTask<T> extends AsyncTask<T, Void, St
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-//        getProgress().show();
+        getProgress().show();
     }
 
     public ProgressDialog getProgress() {
