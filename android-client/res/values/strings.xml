@@ -5,4 +5,20 @@
     <string name="menu_refresh">Refresh</string>
     <string name="menu_details">Details</string>
     <string name="menu_add">Add</string>
+    <string name="addPriceDialogAddButton">Add</string>
+    <string name="addPriceDialogCancelButton">Cancel</string>
+    <string name="newPriceAddButton">Add</string>
+    <string name="newPriceCancelButton">Cancel</string>
+    <string name="addPriceSelectStore">Select</string>
+    <string name="Add">Add</string>
+    <string name="name">Name</string>
+    <string name="ttl">Time to live</string>
+    <string name="price">Price</string>
+
+    <string-array name="times_array">
+        <item>5 min</item>
+        <item>10 min</item>
+        <item>15 min</item>
+        <item>30 min</item>
+    </string-array>
 </resources>

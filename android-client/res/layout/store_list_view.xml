@@ -5,8 +5,10 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent">
 
-    <ExpandableListView
+    <TextView
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:id="@+id/expandableListView"/>
+            android:layout_height="33dp"
+            android:id="@+id/nameTextView" android:gravity="center_vertical" android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_margin="5dp"/>
 </LinearLayout>

@@ -5,4 +5,21 @@
     <string name="menu_refresh">Обновить</string>
     <string name="menu_details">Детали</string>
     <string name="menu_add">Добавить</string>
+    <string name="addPriceDialogAddButton">Добавить</string>
+    <string name="addPriceDialogCancelButton">Cancel</string>
+    <string name="newPriceAddButton">Добавить</string>
+    <string name="newPriceCancelButton">Cancel</string>
+    <string name="addPriceSelectStore">Выбрать</string>
+    <string name="Add">Добавить</string>
+    <string name="name">Название</string>
+    <string name="ttl">Время жизни</string>
+    <string name="price">Цена</string>
+
+    <string-array name="times_array">
+        <item>5 мин</item>
+        <item>10 мин</item>
+        <item>15 мин</item>
+        <item>30 мин</item>
+    </string-array>
+
 </resources>

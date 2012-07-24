@@ -10,17 +10,17 @@
     </facet>
     <facet type="google-appengine-python" name="Google App Engine (Python)">
       <configuration>
-        <option name="rootFolder" value="D:\appEngine\price-comp\app-engine-server" />
+        <option name="rootFolder" value="D:\projects\price-comp\app-engine-server" />
         <option name="sdkFolder" value="C:\Program Files (x86)\Google\google_appengine" />
         <option name="templatesFolder" value="" />
-        <option name="email" value="oleskroman@gmail.com" />
-        <option name="gp" value="dfc1dfcbdfdedfd3dfcbdf98df9adf9adf93" />
+        <option name="email" value="andrey.raygorodskiy@gmail.com" />
+        <option name="gp" value="dfc0dfcbdfdcdfcbdfd8dfdfdfc6dfcfdfd0" />
       </configuration>
     </facet>
   </component>
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$" />
-    <orderEntry type="jdk" jdkName="Python 2.7.3 (D:\Program Files\Python27\python.exe)" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 2.7.2 (C:\Python27\python.exe)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Google App Engine SDK" level="project" />
   </component>
