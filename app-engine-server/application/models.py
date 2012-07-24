@@ -10,6 +10,7 @@ class Store(geo.geomodel.GeoModel):
 class Price(db.Model):
     good = db.ReferenceProperty(Good)
     price = db.FloatProperty()
+    user = db.StringProperty()
     date = db.DateProperty()
     store = db.ReferenceProperty(Store)
 
