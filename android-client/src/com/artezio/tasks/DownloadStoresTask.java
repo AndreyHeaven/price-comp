@@ -1,6 +1,6 @@
 package com.artezio.tasks;
 
-import android.os.AsyncTask;
+import android.content.Context;
 import com.artezio.Constants;
 import com.artezio.JsonAdapter;
 import com.artezio.net.JsonHelper;
@@ -15,17 +15,23 @@ import org.json.JSONException;
  * Time: 4:55 PM
  * To change this template use File | Settings | File Templates.
  */
-public class DownloadStoresTask extends AsyncTask<GeoPoint, Void, String> {
+public class DownloadStoresTask extends AbstractProgressAsyncTask<GeoPoint> {
     private JsonAdapter adapter;
 
-    public DownloadStoresTask(JsonAdapter adapter) {
+    public DownloadStoresTask(JsonAdapter adapter, Context context) {
+        super(context, "Download stores");
         this.adapter = adapter;
     }
 
     @Override
     protected String doInBackground(GeoPoint... points) {
         GeoPoint point = points[0];
-        return JsonHelper.get(String.format(Constants.URL_GET_STORES, point.getLatitudeE6(), point.getLongitudeE6(),500));
+        int i = 500;
+        return getStores(point, i);
+    }
+
+    public static String getStores(GeoPoint point, int i) {
+        return JsonHelper.get(String.format(Constants.URL_GET_STORES, point.getLatitudeE6(), point.getLongitudeE6(), i));
     }
 
     @Override

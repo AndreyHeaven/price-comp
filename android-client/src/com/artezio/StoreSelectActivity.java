@@ -66,8 +66,8 @@ public class StoreSelectActivity extends Activity {
     }
 
     private void updateList() {
-        Location location = Utils.getLocation(this);
-        new DownloadStoresTask(storesAdapter).execute(new GeoPoint((int) (location.getLatitude() * 1e6), (int) (location.getLongitude() * 1e6)));
+        GeoPoint location = Utils.getLocationPoint(this);
+        new DownloadStoresTask(storesAdapter, this).execute(location);
     }
 
     @Override

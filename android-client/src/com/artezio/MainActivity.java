@@ -87,7 +87,8 @@ public class MainActivity extends MapActivity {
     private void search(String code) {
         Intent myIntent = new Intent(this, PricesListActivity.class);
         myIntent.putExtra(Constants.CODE, code);
-        new DownloadItemDetailsTask(this, myIntent).execute(code);
+        startActivity(myIntent);
+//        new DownloadItemDetailsTask(this, myIntent).execute(code);
     }
 
     public GeoPoint getSelectedLocation() {

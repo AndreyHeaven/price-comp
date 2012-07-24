@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.NumberPicker;
 import com.artezio.model.Price;
 import com.artezio.model.Store;
-import com.artezio.tasks.AddPriceTask;
+import com.artezio.net.JsonHelper;
+import com.artezio.tasks.AbstractProgressAsyncTask;
 import org.json.JSONException;
 
 import java.util.Date;
@@ -38,11 +40,12 @@ public class AddPriceActivity extends Activity {
             public void onClick(View v) {
                 // When button is clicked, call up to owning activity.
                 Price p = new Price();
-//                try {
-//                    p.put(Constants.JSON.ITEM, getArguments().getString("code"));
-//                } catch (JSONException e) {
-//
-//                }
+                try {
+                    p.put(Constants.JSON.CODE, getIntent().getStringExtra(Constants.JSON.CODE));
+                } catch (JSONException e) {
+
+                }
+
                 p.setPrice(Double.parseDouble(price.getText().toString()));
 //                Location l = Utils.getLocation(AddPriceActivity.this);
 //                p.setLatitude(l.getLatitude());
@@ -51,25 +54,31 @@ public class AddPriceActivity extends Activity {
                 Store actualStore = getActualStore();
                 if (actualStore != null)
                     p.setStoreKey(actualStore.getKey());
-                new AddPriceTask(AddPriceActivity.this).execute(p);
-                finish();
-            }
-        });
-        Button buttonCancel = (Button) findViewById(R.id.addPriceDialogCancelButton);
-        buttonCancel.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+                new AbstractProgressAsyncTask<Price>(AddPriceActivity.this, "Save price"){
+
+                    @Override
+                    protected String doInBackground(Price... prices) {
+                        if (prices == null || prices.length < 1)
+                            return null;
+                        return JsonHelper.put(Constants.URL_ADD_PRICE, AddPriceActivity.this, prices[0], Constants.JSON.CODE, Constants.JSON.PRICE, Constants.JSON.STORE);
+                    }
+                }.execute(p);
                 finish();
             }
         });
         buttonChangeStore = (Button) findViewById(R.id.buttonChangeStore);
-        buttonChangeStore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(AddPriceActivity.this, StoreSelectActivity.class);
-                startActivityForResult(intent, 0);
-            }
-        });
+//        buttonChangeStore.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                changeStore(view);
+//            }
+//        });
         updateButtonLabel();
+    }
+
+    public void changeStore(View view) {
+        Intent intent = new Intent(this, StoreSelectActivity.class);
+        startActivityForResult(intent, 0);
     }
 
     @Override

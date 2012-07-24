@@ -1,5 +1,6 @@
 package com.artezio.net;
 
+import android.R;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -31,11 +32,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created with IntelliJ IDEA.
  * User: araigorodskiy
  * Date: 7/19/12
  * Time: 2:12 PM
- * To change this template use File | Settings | File Templates.
  */
 public class JsonHelper {
 

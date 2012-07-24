@@ -21,7 +21,7 @@ public class Store extends JSONObject {
     }
 
     public Store(JSONObject copyFrom) throws JSONException {
-        super(copyFrom, new String[]{});
+        super(copyFrom, new String[]{Constants.JSON.NAME,Constants.JSON.LATITUDE,Constants.JSON.LONGITUDE,Constants.JSON.ID});
     }
 
     public String getKey(){
@@ -54,5 +54,22 @@ public class Store extends JSONObject {
         } catch (JSONException e) {
             //
         }
+    }
+
+    public int getLatitude() {
+        try {
+            return getInt(Constants.JSON.LATITUDE);
+        } catch (JSONException e) {
+            return 0;
+        }
+    }
+
+    public int getLongitude() {
+        try {
+            return getInt(Constants.JSON.LONGITUDE);
+        } catch (JSONException e) {
+            return 0;
+        }
+
     }
 }

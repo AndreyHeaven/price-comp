@@ -4,35 +4,43 @@
               android:orientation="vertical"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent">
+    <TextView android:id="@+id/priceTextView"
+              android:layout_width="fill_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginLeft="6dip"
+              android:layout_marginTop="6dip"
+              android:textAppearance="?android:attr/textAppearanceLarge"
+            />
 
-    <TextView
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="New Text"
-            android:id="@+id/priceTextView"/>
+
     <LinearLayout
+            android:layout_below="@+id/priceTextView"
+            android:layout_alignLeft="@+id/priceTextView"
             android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" android:id="@+id/linearLayout">
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
-                android:text="New Text"
-                android:id="@+id/storeTextView" android:layout_marginRight="10dp"/>
+            android:layout_height="wrap_content" android:id="@+id/linearLayout" android:gravity="right">
+        <TextView android:id="@+id/storeTextView"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:textAppearance="?android:attr/textAppearanceSmall"
+                  android:text="1234" android:layout_marginRight="81dp"/>
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="("
-                android:id="@+id/textView3" android:layout_gravity="center"/>
+                android:id="@+id/textView3" android:layout_gravity="center"
+                android:textAppearance="?android:attr/textAppearanceSmall"/>
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="New Text"
-                android:id="@+id/dateTextView" android:layout_gravity="center"/>
+                android:id="@+id/dateTextView" android:layout_gravity="center"
+                android:textAppearance="?android:attr/textAppearanceSmall"/>
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text=")"
-                android:id="@+id/textView4" android:layout_gravity="center"/>
+                android:id="@+id/textView4"
+                android:textAppearance="?android:attr/textAppearanceSmall"/>
     </LinearLayout>
 </LinearLayout>

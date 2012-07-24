@@ -62,20 +62,25 @@ def find_good(barcode, lat, long, acc):
 
             stores = get_array_of_stores(lat, long, acc)
             if len(stores) > 0:
-                prices = Price.all().filter('good = ',good).filter('store in ',stores).order('price')
+                prices = Price.all().filter('good = ', good).filter('store in ', stores).order('price')
 
                 array_of_prices = []
+                array_of_stores = []
+                for store in stores:
+                    array_of_stores.append(
+                        {'id': store.key().id(), 'name': store.name, 'lat': store.location.lat * 1e6,
+                         'lon': store.location.lon * 1e6,
+                         'date': store.date.strftime("%Y-%m-%d")})
                 for price in prices:
                     try:
                         obj1 = price.store
                         array_of_prices.append(
                                 {'price': price.price, 'date': price.date.strftime("%Y-%m-%d"),
-                                 'store': price.store.name,
-                                 'lat': obj1.location.lat, 'lon': obj1.location.lon})
+                                  'store_id': obj1.key().id()})
                     except db.ReferencePropertyResolveError:
                         # Referenced entity was deleted or never existed.
                         pass
-                return json_response({'code': good.code, 'id': good.key().id(), 'prices': array_of_prices})
+                return json_response({'code': good.code, 'id': good.key().id(),'stores':array_of_stores, 'prices': array_of_prices})
             else:
                 return return_error('stores not found !')
         else:
