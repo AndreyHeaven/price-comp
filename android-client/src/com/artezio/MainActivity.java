@@ -1,24 +1,23 @@
 package com.artezio;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import com.artezio.util.Utils;
-import com.google.android.maps.*;
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.MapActivity;
 
 public class MainActivity extends MapActivity {
 
 
     private EditText text;
-    private ImageButton buttonSearch;
+//    private ImageButton buttonSearch;
 
 
     /**
@@ -30,29 +29,20 @@ public class MainActivity extends MapActivity {
         Utils.getLocation(this);
         setContentView(R.layout.main);
         text = ((EditText) findViewById(R.id.barcodeText));
-        text.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                updateScanButton();
-                return false;
-            }
-        });
+//        final ImageButton button = (ImageButton) findViewById(R.id.buttonscan);
+//        buttonSearch = (ImageButton) findViewById(R.id.buttonSearch);
+    }
 
-        final ImageButton button = (ImageButton) findViewById(R.id.buttonscan);
-        button.setOnClickListener(new Button.OnClickListener() {
-            public void onClick(View v) {
-                scan(v);
-            }
-        });
-        buttonSearch = (ImageButton) findViewById(R.id.buttonSearch);
-        buttonSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String code = text.getText().toString();
-                search(code);
-            }
-        });
-        updateScanButton();
+    public void search(View view) {
+        String code = text.getText().toString();
+        if (code == null || code.trim().length() == 0) {
+            new AlertDialog.Builder(this).setMessage(R.string.barCodeRequred)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    }).create().show();
+        } else
+            search(code.trim());
     }
 
     public void scan(View view) {
@@ -71,6 +61,7 @@ public class MainActivity extends MapActivity {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
+
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
         switch (item.getItemId()) {
@@ -81,6 +72,7 @@ public class MainActivity extends MapActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -107,8 +99,8 @@ public class MainActivity extends MapActivity {
         Location location = Utils.getLocation(this);
         GeoPoint p = null;
         if (location != null)
-        p = new GeoPoint((int) (location.getLatitude() * 1E6),
-                (int) (location.getLongitude() * 1E6));
+            p = new GeoPoint((int) (location.getLatitude() * 1E6),
+                    (int) (location.getLongitude() * 1E6));
         return p;
 //        return mapView.getMapCenter();
     }
@@ -124,16 +116,5 @@ public class MainActivity extends MapActivity {
 //            else if (resultCode == RESULT_CANCELED) {
 //            }
         }
-        updateScanButton();
-    }
-
-    private void updateScanButton() {
-        buttonSearch.setEnabled(!TextUtils.isEmpty(text.getText()));
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        updateScanButton();
     }
 }

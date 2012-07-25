@@ -13,6 +13,9 @@
     <string name="ttl">Time to live</string>
     <string name="price">Price</string>
     <string name="addStore">Add store</string>
+    <string name="storeNotSelected">Store is now selected or expired</string>
+    <string name="priceRequred">Price is invalid</string>
+    <string name="barCodeRequred">Barcode requred</string>
 
     <string-array name="times_array">
         <item>5 min</item>

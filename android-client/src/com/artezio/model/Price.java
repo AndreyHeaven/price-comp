@@ -19,7 +19,7 @@ public class Price extends JSONObject implements Serializable{
     }
 
     public Price(JSONObject copyFrom) throws JSONException {
-        super(copyFrom, new String[]{Constants.JSON.PRICE,Constants.JSON.DATE,Constants.JSON.LONGITUDE,Constants.JSON.LATITUDE});
+        super(copyFrom, new String[]{Constants.JSON.PRICE,Constants.JSON.DATE,Constants.JSON.STORE});
     }
 
     public Double getPrice(){
@@ -45,42 +45,19 @@ public class Price extends JSONObject implements Serializable{
         }
     }
 
-    public Double getLongitude() {
-        try {
-            return getDouble(Constants.JSON.LONGITUDE);
-        } catch (JSONException e) {
-            return null;
-        }
-    }
-    public Double getLatitude() {
-        try {
-            return getDouble(Constants.JSON.LATITUDE);
-        } catch (JSONException e) {
-            return null;
-        }
-    }
-
-    public void setLatitude(double latitude) {
-        try {
-            put(Constants.JSON.LATITUDE,latitude);
-        } catch (JSONException e) {
-            //
-        }
-    }
-
-    public void setLongitude(double l) {
-        try {
-            put(Constants.JSON.LONGITUDE,l);
-        } catch (JSONException e) {
-            //
-        }
-    }
-
     public String getDate() {
         try {
             return getString(Constants.JSON.DATE);
         } catch (JSONException e) {
             return null;
+        }
+    }
+
+    public int getStoreId() {
+        try {
+            return getInt(Constants.JSON.STORE);
+        } catch (JSONException e) {
+            return 0;
         }
     }
 }

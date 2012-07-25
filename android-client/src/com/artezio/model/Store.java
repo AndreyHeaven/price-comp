@@ -5,6 +5,8 @@ import com.google.android.maps.GeoPoint;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Map;
+
 /**
  * Created with IntelliJ IDEA.
  * User: araigorodskiy
@@ -14,6 +16,10 @@ import org.json.JSONObject;
  */
 public class Store extends JSONObject {
     public Store() {
+    }
+
+    public Store(Map copyFrom) {
+        super(copyFrom);
     }
 
     public Store(String json) throws JSONException {

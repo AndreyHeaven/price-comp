@@ -25,6 +25,6 @@
             android:layout_width="fill_parent"
             android:layout_height="60dp"
             android:id="@+id/buttonSearch" android:src="@android:drawable/ic_menu_search"
-            android:contentDescription=""/>
+            android:contentDescription="" android:onClick="search"/>
 </LinearLayout>
 

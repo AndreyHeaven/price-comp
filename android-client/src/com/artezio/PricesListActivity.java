@@ -6,9 +6,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
 import com.artezio.model.Item;
+import com.artezio.model.Price;
+import com.artezio.model.Store;
+import com.artezio.net.JsonHelper;
 import com.artezio.tasks.DownloadItemDetailsTask;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,8 +30,10 @@ import java.util.Map;
  * Time: 15:23
  */
 public class PricesListActivity extends Activity {
-    private JsonAdapter adapter;
+    //    private JsonAdapter adapter;
     private ExpandableListView elvMain;
+    private List<Map<String, String>> groupData;
+    private List<List<Map<String, String>>> childData;
 
 
     @Override
@@ -36,6 +43,41 @@ public class PricesListActivity extends Activity {
         Intent intent = getIntent();
         String code = intent.getStringExtra(Constants.CODE);
         elvMain = (ExpandableListView) findViewById(R.id.expandableListView);
+        elvMain.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView expandableListView, View view, int i, int i1, long l) {
+                if (groupData != null && childData != null) {
+                    Map<String, String> stringStringMap = groupData.get(i);
+                    Store store = new Store(stringStringMap);
+                    double lat = store.getLatitude() / 1e6;
+                    double lon = store.getLongitude() / 1e6;
+                    Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("geo:" + lat + "," + lon + "?q="+lat+","+lon+"("+store.getName()+")"));
+                    startActivity(intent);
+                    return true;
+                } else
+                    return false;  //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });
+        elvMain.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+//                try {
+                Object itemAtPosition = adapterView.getItemAtPosition(i);
+//                    Price price = new Price((JSONObject)adapter.getItem(position));
+//                    if (price.getLatitude() == null || price.getLongitude() == null)
+//                        return;
+//                    Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("geo:" + price.getLatitude() + "," + price.getLongitude()+"?z=18"));
+//                    startActivity(intent);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                //To change body of implemented methods use File | Settings | File Templates.
+            }
+        });
 //        adapter = new JsonAdapter(this, null, R.layout.price_list_item,new String[]{Constants.JSON.PRICE,Constants.JSON.STORE,Constants.JSON.DATE}, new int[]{R.id.priceTextView,R.id.storeTextView,R.id.dateTextView});
 //        setListAdapter(adapter);
         updatePrices(code);
@@ -102,24 +144,23 @@ public class PricesListActivity extends Activity {
 //            adapter.setData(jsonArray);
             JSONArray jsonArray = item.getJSONArray("stores");
             JSONArray pricesJsonArray = item.getJSONArray(Constants.JSON.PRICES);
-            List<Map<String, String>> groupData = new ArrayList<Map<String, String>>();
-            List<List<java.util.Map<String, String>>> childData = new ArrayList<List<Map<String, String>>>();
+            groupData = new ArrayList<Map<String, String>>();
+            childData = new ArrayList<List<Map<String, String>>>();
             for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject1 = jsonArray.getJSONObject(i);
-                HashMap<String, String> stringStringHashMap = new HashMap<String, String>();
-                stringStringHashMap.put("name", jsonObject1.getString(Constants.JSON.NAME));
-                groupData.add(stringStringHashMap);
+                Store jsonObject1 = new Store(jsonArray.getJSONObject(i));
+                Map<String, String> stringStringHashMap = JsonHelper.toStringMap(jsonObject1);
                 List<Map<String, String>> prices = getPrices(jsonObject1.getInt(Constants.JSON.ID), pricesJsonArray);
+                stringStringHashMap.put(Constants.JSON.PRICE, getMinPrice(prices));
+                groupData.add(stringStringHashMap);
                 childData.add(prices);
-                stringStringHashMap.put("price", getMinPrice(prices));
             }
 
             SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
                     this,
                     groupData,
                     R.layout.price_store_item,
-                    new String[]{"name","price"},
-                    new int[]{R.id.storeName,R.id.minPrice},
+                    new String[]{Constants.JSON.NAME, Constants.JSON.PRICE},
+                    new int[]{R.id.storeName, R.id.minPrice},
                     childData,
                     R.layout.price_list_item,
                     new String[]{"price", "date"},
@@ -137,7 +178,7 @@ public class PricesListActivity extends Activity {
         for (Map<String, String> price : prices) {
             try {
                 Double price1 = new Double(price.get("price"));
-                if (min == null || min>price1)
+                if (min == null || min > price1)
                     min = price1;
             } catch (NumberFormatException e) {
                 //
@@ -149,13 +190,10 @@ public class PricesListActivity extends Activity {
     private List<Map<String, String>> getPrices(int id, JSONArray jsonArray) throws JSONException {
         List<Map<String, String>> list = new ArrayList<Map<String, String>>();
         for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-            int store_id = jsonObject.getInt("store_id");
+            Price price = new Price(jsonArray.getJSONObject(i));
+            int store_id = price.getStoreId();
             if (store_id == id) {
-                HashMap<String, String> stringStringHashMap = new HashMap<String, String>();
-                stringStringHashMap.put("price", jsonObject.getString(Constants.JSON.PRICE));
-                stringStringHashMap.put("store", "" + store_id);
-                stringStringHashMap.put("date", jsonObject.getString(Constants.JSON.DATE));
+                Map<String, String> stringStringHashMap = JsonHelper.toStringMap(price);
                 list.add(stringStringHashMap);
             }
         }

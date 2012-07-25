@@ -66,22 +66,18 @@ public class AddPriceActivity extends Activity {
                 }.execute(p);
                 finish();
             } else {
-                new AlertDialog.Builder(this).setMessage("Store is now selected or expired")
+                new AlertDialog.Builder(this).setMessage(R.string.storeNotSelected)
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                             }
                         }).create().show();
             }
         } catch (NumberFormatException e) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Price is invalid")
-//                    .setCancelable(false)
+            new AlertDialog.Builder(this).setMessage(R.string.priceRequred)
                     .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                         }
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();
+                    }).create().show();
         }
 
 
