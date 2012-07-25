@@ -3,12 +3,15 @@ package com.artezio;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 import com.artezio.model.Store;
 import com.artezio.net.JsonHelper;
 import com.artezio.tasks.AbstractProgressAsyncTask;
@@ -18,6 +21,7 @@ import com.google.android.maps.*;
 import de.android1.overlaymanager.ManagedOverlay;
 import de.android1.overlaymanager.ManagedOverlayItem;
 import de.android1.overlaymanager.OverlayManager;
+import de.android1.overlaymanager.lazyload.DummyListenerListener;
 import de.android1.overlaymanager.lazyload.LazyLoadCallback;
 import de.android1.overlaymanager.lazyload.LazyLoadException;
 import org.json.JSONArray;
@@ -38,22 +42,25 @@ public class AddStoreActivity extends MapActivity {
     private EditText storeName;
     public static final float CIRCLE_RADIUS = 10;
     OverlayManager overlayManager;
+    private MyLocationOverlay myLocationOverlay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.store_add);
         storeName = (EditText) findViewById(R.id.storeNameEditText);
-        Location location = Utils.getLocation(this);
-        GeoPoint p = new GeoPoint((int) (location.getLatitude() * 1E6),
-                (int) (location.getLongitude() * 1E6));
         mapView = (MapView) findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
         final MapController mc = mapView.getController();
-        mc.animateTo(p);
         mc.setZoom(16);
+        GeoPoint location = Utils.getLocationPoint(this);
+        if (location != null) {
+            mc.animateTo(location);
+        }
+        overlayManager = new OverlayManager(getApplication(), mapView);
         List<Overlay> overlays = mapView.getOverlays();
-        MyLocationOverlay myLocationOverlay = new MyLocationOverlay(this, mapView);
+        createOverlayWithLazyLoading();
+        myLocationOverlay = new MyLocationOverlay(this, mapView);
         overlays.add(myLocationOverlay);
         overlays.add(new Overlay() {
             @Override
@@ -102,41 +109,72 @@ public class AddStoreActivity extends MapActivity {
                 finish();
             }
         });
-        overlayManager = new OverlayManager(getApplication(), mapView);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        myLocationOverlay.enableMyLocation();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        myLocationOverlay.disableMyLocation();
     }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        createOverlayWithLazyLoading();
-    }
 
+    }
+    public static Drawable boundCenter(Drawable d)
+    {
+        d.setBounds(d.getIntrinsicWidth() /- 2, d.getIntrinsicHeight() / -2,
+                d.getIntrinsicWidth() / 2, d.getIntrinsicHeight() / 2);
+        return d;
+    }
     public void createOverlayWithLazyLoading() {
         //animation will be rendered to this ImageView
 //        ImageView loaderanim = (ImageView) findViewById(R.id.loader);
 
-        ManagedOverlay managedOverlay = overlayManager.createOverlay("lazyloadOverlay");
+        Drawable icon = boundCenter(getResources().getDrawable(R.drawable.shoppingcart));
+        ManagedOverlay managedOverlay = overlayManager.createOverlay("lazyloadOverlay", icon);
+
+
+        managedOverlay.setOnOverlayGestureListener(new DummyListenerListener(){
+            @Override
+            public boolean onSingleTap(MotionEvent e, ManagedOverlay overlay, GeoPoint point, ManagedOverlayItem item) {
+                if (item != null) {
+                    Toast.makeText(AddStoreActivity.this, item.getTitle(), 1000).show();
+                    return true;
+                }
+                return super.onSingleTap(e, overlay, point, item);
+            }
+        });
         // default built-in animation
 //        managedOverlay.enableLazyLoadAnimation(loaderanim);
         // custom animation
         // managedOverlay.enableLazyLoadAnimation(loaderanim).setAnimationDrawable((AnimationDrawable)getResources().getDrawable(R.anim.myanim));
-
         managedOverlay.setLazyLoadCallback(new LazyLoadCallback() {
             @Override
             public List<ManagedOverlayItem> lazyload(GeoPoint topLeft, GeoPoint bottomRight, ManagedOverlay overlay) throws LazyLoadException {
                 int rLat = (bottomRight.getLatitudeE6() - topLeft.getLatitudeE6()) / 2;
                 int rLon = (bottomRight.getLongitudeE6() - topLeft.getLongitudeE6()) / 2;
+                float[] floats = new float[1];
                 GeoPoint center = new GeoPoint(topLeft.getLatitudeE6() + rLat,
                         topLeft.getLongitudeE6() + rLon);
+                Location.distanceBetween(topLeft.getLatitudeE6()/1e6,topLeft.getLongitudeE6()/1e6,center.getLatitudeE6()/1e6,center.getLongitudeE6()/1e6,floats);
+
                 List<ManagedOverlayItem> items = new LinkedList<ManagedOverlayItem>();
                 try {
-                    String stores = DownloadStoresTask.getStores(center, Math.max(rLat, rLon));
+                    String stores = DownloadStoresTask.getStores(center, (int)floats[0]);
                     JSONArray arr = new JSONArray(stores);
                     for (int i = 0; i < arr.length(); i++) {
                         JSONObject point = arr.getJSONObject(i);
                         Store store = new Store(point);
                         ManagedOverlayItem item = new ManagedOverlayItem(new GeoPoint(store.getLatitude(), store.getLongitude()), store.getName(), store.getName());
-                        item.setMarker(getResources().getDrawable(R.drawable.shopping_cart));
                         items.add(item);
                     }
                     // lets simulate a latency

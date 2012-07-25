@@ -41,7 +41,7 @@ public class DownloadStoresTask extends AbstractProgressAsyncTask<GeoPoint> {
             JSONArray arr = new JSONArray(s);
             adapter.setData(arr);
         } catch (JSONException e) {
-            //
+            e.printStackTrace();
         }
 
 

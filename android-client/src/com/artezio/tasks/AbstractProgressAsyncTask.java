@@ -33,7 +33,11 @@ public abstract class AbstractProgressAsyncTask<T> extends AsyncTask<T, Void, St
     @Override
     protected void onPostExecute(String jsonObject) {
         super.onPostExecute(jsonObject);
-        getProgress().dismiss();
+        try {
+            getProgress().dismiss();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 //        intent.putExtra("item", jsonObject);
 //        mainActivity.startActivity(intent);
     }

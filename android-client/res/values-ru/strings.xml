@@ -6,7 +6,6 @@
     <string name="menu_details">Детали</string>
     <string name="menu_add">Добавить</string>
     <string name="addPriceDialogAddButton">Добавить</string>
-    <string name="addPriceDialogCancelButton">Cancel</string>
     <string name="newPriceAddButton">Добавить</string>
     <string name="newPriceCancelButton">Cancel</string>
     <string name="addPriceSelectStore">Выбрать</string>
@@ -14,6 +13,7 @@
     <string name="name">Название</string>
     <string name="ttl">Время жизни</string>
     <string name="price">Цена</string>
+    <string name="addStore">Добавить магазин</string>
 
     <string-array name="times_array">
         <item>5 мин</item>

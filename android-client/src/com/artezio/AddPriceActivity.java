@@ -1,13 +1,14 @@
 package com.artezio;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.NumberPicker;
 import com.artezio.model.Price;
 import com.artezio.model.Store;
 import com.artezio.net.JsonHelper;
@@ -34,23 +35,27 @@ public class AddPriceActivity extends Activity {
         SharedPreferences settings = getSharedPreferences(Constants.PREFS_NAME, 0);
         updateStore(settings);
         setContentView(R.layout.addprice);
-        final EditText price = (EditText) findViewById(R.id.addPriceDialogPrice);
-        Button button = (Button) findViewById(R.id.addPriceDialogAddButton);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Price p = new Price();
-                try {
-                    p.put(Constants.JSON.CODE, getIntent().getStringExtra(Constants.JSON.CODE));
-                } catch (JSONException e) {
 
-                }
+//        Button button = (Button) findViewById(R.id.addPriceDialogAddButton);
+        buttonChangeStore = (Button) findViewById(R.id.buttonChangeStore);
+        updateButtonLabel();
+    }
 
-                p.setPrice(Double.parseDouble(price.getText().toString()));
-                updateButtonLabel();
-                Store actualStore = getActualStore();
-                if (actualStore != null)
-                    p.setStoreKey(actualStore.getKey());
-                new AbstractProgressAsyncTask<Price>(AddPriceActivity.this, "Save price"){
+    public void addNewPrice(View v) {
+        Price p = new Price();
+        try {
+            p.put(Constants.JSON.CODE, getIntent().getStringExtra(Constants.JSON.CODE));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        EditText price = (EditText) findViewById(R.id.addPriceDialogPrice);
+        try {
+            p.setPrice(Double.parseDouble(price.getText().toString()));
+            updateButtonLabel();
+            Store actualStore = getActualStore();
+            if (actualStore != null) {
+                p.setStoreKey(actualStore.getKey());
+                new AbstractProgressAsyncTask<Price>(AddPriceActivity.this, "Save price") {
 
                     @Override
                     protected String doInBackground(Price... prices) {
@@ -60,16 +65,26 @@ public class AddPriceActivity extends Activity {
                     }
                 }.execute(p);
                 finish();
+            } else {
+                new AlertDialog.Builder(this).setMessage("Store is now selected or expired")
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                            }
+                        }).create().show();
             }
-        });
-        buttonChangeStore = (Button) findViewById(R.id.buttonChangeStore);
-//        buttonChangeStore.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                changeStore(view);
-//            }
-//        });
-        updateButtonLabel();
+        } catch (NumberFormatException e) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Price is invalid")
+//                    .setCancelable(false)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+
+
     }
 
     public void changeStore(View view) {
@@ -88,14 +103,14 @@ public class AddPriceActivity extends Activity {
         SharedPreferences.Editor edit = settings.edit();
         edit.putString(Constants.STORE, stringExtra);
         edit.putInt(Constants.TIME, time);
-        edit.putLong(Constants.START_TIME,startTime);
+        edit.putLong(Constants.START_TIME, startTime);
         edit.commit();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (data != null){
+        if (data != null) {
             stringExtra = data.getStringExtra(Constants.STORE);
             time = data.getIntExtra(Constants.TIME, 0);
             startTime = data.getLongExtra(Constants.START_TIME, new Date().getTime());
@@ -116,7 +131,7 @@ public class AddPriceActivity extends Activity {
 
     private void updateStore(SharedPreferences data) {
         if (data != null) {
-            stringExtra = data.getString(Constants.STORE,"{}");
+            stringExtra = data.getString(Constants.STORE, "{}");
             time = data.getInt(Constants.TIME, 0);
             startTime = data.getLong(Constants.START_TIME, new Date().getTime());
         }
@@ -134,6 +149,7 @@ public class AddPriceActivity extends Activity {
             try {
                 return new Store(stringExtra);
             } catch (JSONException e) {
+                e.printStackTrace();
                 return null;
             }
         } else

@@ -53,38 +53,38 @@ def add_price():
 @app.route('/good/<barcode>/<lat>/<long>/<acc>', methods=['GET'])
 def find_good(barcode, lat, long, acc):
     if barcode is not None and len(barcode) > 0:
-        good = db.GqlQuery("SELECT * "
-                           "FROM Good "
-                           "WHERE code = :1 ",
-            barcode).fetch(1)
-        if len(good) > 0:
-            good = good[0]
-
-            stores = get_array_of_stores(lat, long, acc)
-            if len(stores) > 0:
+        stores = get_array_of_stores(lat, long, acc)
+        if len(stores) > 0:
+            good = db.GqlQuery("SELECT * "
+                               "FROM Good "
+                               "WHERE code = :1 ",
+                barcode).fetch(1)
+            if len(good) > 0:
+                good = good[0]
                 prices = Price.all().filter('good = ', good).filter('store in ', stores).order('price')
 
                 array_of_prices = []
                 array_of_stores = []
                 for store in stores:
                     array_of_stores.append(
-                        {'id': store.key().id(), 'name': store.name, 'lat': store.location.lat * 1e6,
-                         'lon': store.location.lon * 1e6,
-                         'date': store.date.strftime("%Y-%m-%d")})
+                            {'id': store.key().id(), 'name': store.name, 'lat': store.location.lat * 1e6,
+                             'lon': store.location.lon * 1e6,
+                             'date': store.date.strftime("%Y-%m-%d")})
                 for price in prices:
                     try:
                         obj1 = price.store
                         array_of_prices.append(
                                 {'price': price.price, 'date': price.date.strftime("%Y-%m-%d"),
-                                  'store_id': obj1.key().id()})
+                                 'store_id': obj1.key().id()})
                     except db.ReferencePropertyResolveError:
                         # Referenced entity was deleted or never existed.
                         pass
-                return json_response({'code': good.code, 'id': good.key().id(),'stores':array_of_stores, 'prices': array_of_prices})
+                return json_response({'code': good.code, 'id': good.key().id(), 'stores': array_of_stores,
+                                      'prices': array_of_prices})
             else:
-                return return_error('stores not found !')
+                return return_error('good not found !')
         else:
-            return json_response({'code': barcode})
+            return return_error('stores not found !')
     else:
         return return_error('invalid code !')
 

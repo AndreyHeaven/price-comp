@@ -1,31 +1,24 @@
 package com.artezio;
 
 import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ZoomControls;
-import com.artezio.tasks.DownloadItemDetailsTask;
 import com.artezio.util.Utils;
 import com.google.android.maps.*;
-
-import java.util.List;
 
 public class MainActivity extends MapActivity {
 
 
     private EditText text;
     private ImageButton buttonSearch;
-//    private MapView mapView;
-//    private MyLocationOverlay myLocationOverlay;
 
 
     /**
@@ -48,14 +41,7 @@ public class MainActivity extends MapActivity {
         final ImageButton button = (ImageButton) findViewById(R.id.buttonscan);
         button.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
-                Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-                String appPackage = Utils.findTargetAppPackage(MainActivity.this, intent);
-                if (appPackage == null) {
-                    Utils.showDownloadDialog(MainActivity.this);
-                } else {
-//                intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
-                    startActivityForResult(intent, 0);
-                }
+                scan(v);
             }
         });
         buttonSearch = (ImageButton) findViewById(R.id.buttonSearch);
@@ -69,6 +55,32 @@ public class MainActivity extends MapActivity {
         updateScanButton();
     }
 
+    public void scan(View view) {
+        Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+        String appPackage = Utils.findTargetAppPackage(this, intent);
+        if (appPackage == null) {
+            Utils.showDownloadDialog(this);
+        } else {
+//                intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
+            startActivityForResult(intent, 0);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_add_store:
+                Intent intent = new Intent(this, AddStoreActivity.class);
+                startActivity(intent);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -107,7 +119,7 @@ public class MainActivity extends MapActivity {
                 String contents = intent.getStringExtra("SCAN_RESULT");
                 String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
                 text.setText(contents);
-                search(contents);
+//                search(contents);
             }
 //            else if (resultCode == RESULT_CANCELED) {
 //            }

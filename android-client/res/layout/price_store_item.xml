@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-          android:id="@+id/storeName"
+<LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="fill_parent"
+        android:layout_height="?android:attr/listPreferredItemHeight" xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/linearLayout">
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/storeName"
               android:layout_width="match_parent"
               android:layout_height="?android:attr/listPreferredItemHeight"
               android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
               android:textAppearance="?android:attr/textAppearanceLarge"
-              android:gravity="center_vertical">
+              android:gravity="center_vertical" android:layout_marginRight="16dp" android:layout_gravity="right|top"
+              android:layout_weight="2">
 
-</TextView>
+    </TextView>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00"
+            android:id="@+id/minPrice" android:layout_gravity="center_vertical|right"/>
+</LinearLayout>

@@ -54,7 +54,7 @@ public class JsonHelper {
             try {
                 pairs.add(new BasicNameValuePair(key, o.getString(key)));
             } catch (JSONException e) {
-                //
+                e.printStackTrace();
             }
         }
         if (email != null)
@@ -86,9 +86,9 @@ public class JsonHelper {
 
     public static String get(String url) {
         StringBuilder builder = new StringBuilder();
-        HttpClient client = new DefaultHttpClient();
-        HttpGet httpGet = new HttpGet(Constants.APP_URL + url);
         try {
+            HttpClient client = new DefaultHttpClient();
+            HttpGet httpGet = new HttpGet(Constants.APP_URL + url);
             HttpResponse response = client.execute(httpGet);
             StatusLine statusLine = response.getStatusLine();
             int statusCode = statusLine.getStatusCode();
@@ -105,7 +105,7 @@ public class JsonHelper {
             }
         } catch (ClientProtocolException e) {
             e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return builder.toString();

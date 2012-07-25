@@ -2,42 +2,29 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="fill_parent"
-              android:layout_height="wrap_content"
-              android:padding="10dp" android:baselineAligned="false" android:gravity="center"
+              android:layout_height="fill_parent"
+              android:padding="10dp" android:baselineAligned="false"
               android:layout_gravity="center">
-    <EditText
-            android:layout_width="fill_parent"
-            android:layout_height="0dp"
-            android:id="@+id/barcodeText" android:layout_weight="2.13"
-            android:inputType="number" android:lines="1"/>
     <LinearLayout
             android:orientation="horizontal"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content" android:id="@+id/linearLayout"
             android:layout_gravity="center">
+        <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/barcodeText" android:layout_weight="2"
+                android:inputType="number" android:lines="1" android:layout_gravity="bottom"/>
         <ImageButton
-                android:layout_width="150dp"
+                android:layout_width="wrap_content"
                 android:layout_height="60dp"
-                android:id="@+id/buttonSearch" android:src="@android:drawable/ic_menu_search"
-                android:contentDescription="" android:layout_gravity="center"/>
-        <ImageButton
-                android:layout_width="150dp"
-                android:layout_height="60dp"
-                android:id="@+id/buttonscan" android:src="@drawable/add_barcode" android:contentDescription=""
+                android:id="@+id/buttonscan" android:src="@drawable/add_barcode" android:onClick="scan"
                 android:layout_gravity="center"/>
     </LinearLayout>
-<!--
-    <com.google.android.maps.MapView
-            android:id="@+id/mapview"
+    <ImageButton
             android:layout_width="fill_parent"
-            android:layout_height="186dp"
-            android:clickable="true"
-            android:apiKey="0fNkg_i2Wi_c5zx2eftKRfJ-1Z8-OOVKXmNQGfw"
-            />
-    <ZoomControls
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/zoomControls" android:layout_gravity="center"/>
--->
+            android:layout_height="60dp"
+            android:id="@+id/buttonSearch" android:src="@android:drawable/ic_menu_search"
+            android:contentDescription=""/>
 </LinearLayout>
 

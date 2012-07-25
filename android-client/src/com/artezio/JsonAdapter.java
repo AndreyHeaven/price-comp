@@ -58,6 +58,7 @@ public class JsonAdapter extends BaseAdapter {
         try {
             return data != null ? data.get(i) : null;
         } catch (JSONException e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -101,6 +102,7 @@ public class JsonAdapter extends BaseAdapter {
         try {
             dataSet = data.getJSONObject(position);
         } catch (JSONException e) {
+            e.printStackTrace();
             dataSet = null;
         }
         if (dataSet == null) {
@@ -122,6 +124,7 @@ public class JsonAdapter extends BaseAdapter {
                     data = dataSet.getString(from[i]);
                     text = data == null ? "" : data;
                 } catch (JSONException e) {
+                    e.printStackTrace();
                     text = null;
                 }
 

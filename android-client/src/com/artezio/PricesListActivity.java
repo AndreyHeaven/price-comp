@@ -109,25 +109,41 @@ public class PricesListActivity extends Activity {
                 HashMap<String, String> stringStringHashMap = new HashMap<String, String>();
                 stringStringHashMap.put("name", jsonObject1.getString(Constants.JSON.NAME));
                 groupData.add(stringStringHashMap);
-                childData.add(getPrices(jsonObject1.getInt(Constants.JSON.ID), pricesJsonArray));
+                List<Map<String, String>> prices = getPrices(jsonObject1.getInt(Constants.JSON.ID), pricesJsonArray);
+                childData.add(prices);
+                stringStringHashMap.put("price", getMinPrice(prices));
             }
 
             SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
                     this,
                     groupData,
                     R.layout.price_store_item,
-                    new String[]{"name"},
-                    new int[]{R.id.storeName},
+                    new String[]{"name","price"},
+                    new int[]{R.id.storeName,R.id.minPrice},
                     childData,
                     R.layout.price_list_item,
-                    new String[]{"price", "store", "date"},
-                    new int[]{R.id.priceTextView, R.id.storeTextView, R.id.dateTextView});
+                    new String[]{"price", "date"},
+                    new int[]{R.id.priceTextView, R.id.dateTextView});
             elvMain.setAdapter(adapter);
 
         } catch (JSONException e) {
             //
         }
 
+    }
+
+    private String getMinPrice(List<Map<String, String>> prices) {
+        Double min = null;
+        for (Map<String, String> price : prices) {
+            try {
+                Double price1 = new Double(price.get("price"));
+                if (min == null || min>price1)
+                    min = price1;
+            } catch (NumberFormatException e) {
+                //
+            }
+        }
+        return min != null ? min.toString() : null;
     }
 
     private List<Map<String, String>> getPrices(int id, JSONArray jsonArray) throws JSONException {
