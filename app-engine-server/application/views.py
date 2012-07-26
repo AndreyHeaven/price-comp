@@ -75,7 +75,7 @@ def find_good(barcode, lat, long, acc):
                         obj1 = price.store
                         array_of_prices.append(
                                 {'price': price.price, 'date': price.date.strftime("%Y-%m-%d"),
-                                 'store_id': obj1.key().id()})
+                                 'store': obj1.key().id()})
                     except db.ReferencePropertyResolveError:
                         # Referenced entity was deleted or never existed.
                         pass

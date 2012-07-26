@@ -17,6 +17,8 @@
     <string name="storeNotSelected">Магазин не выбран или вышло время ожидания</string>
     <string name="priceRequred">Цена не задана</string>
     <string name="barCodeRequred">Код товара не задан</string>
+    <string name="radiusLabel">%.1f км</string>
+    <string name="AddAndClose">Добавить и закрыть</string>
 
     <string-array name="times_array">
         <item>5 мин</item>

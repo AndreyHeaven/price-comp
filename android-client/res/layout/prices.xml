@@ -5,6 +5,29 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent">
 
+    <TableLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/tableLayout"
+            android:layout_gravity="center_horizontal">
+        <TableRow
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent" android:id="@+id/tableRow">
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-"
+                    android:id="@+id/minusRadiusButton" android:layout_column="0" android:onClick="minusRadius"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/radiusTextView" android:layout_column="2" android:layout_gravity="center"/>
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="+"
+                    android:id="@+id/plusRadiusButton" android:layout_column="4" android:onClick="plusRadius"/>
+        </TableRow>
+    </TableLayout>
     <ExpandableListView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

@@ -38,6 +38,7 @@ import java.util.List;
 public class AddStoreActivity extends MapActivity {
 
     public static final int ARM = 7;
+    public static final String OVERLAY = "lazyloadOverlay";
     private MapView mapView;
     private EditText storeName;
     public static final float CIRCLE_RADIUS = 10;
@@ -86,29 +87,38 @@ public class AddStoreActivity extends MapActivity {
         mapView.invalidate();
 
 
-        Button addStoreButton = (Button) findViewById(R.id.addStoreButton);
-        addStoreButton.setOnClickListener(new View.OnClickListener() {
+    }
+
+    public void addStoreAndFinish(View view) {
+        addStore(null);
+        finish();
+    }
+
+    public void addStore(final View view) {
+        Store store = new Store();
+        String name = storeName.getText().toString();
+        Log.d(AddStoreActivity.class.getName(), name);
+        store.setName(name);
+        store.setPoint(mapView.getMapCenter());
+        new AbstractProgressAsyncTask<Store>(AddStoreActivity.this, "Save store") {
+
             @Override
-            public void onClick(View view) {
-                Store store = new Store();
-                String name = storeName.getText().toString();
-                Log.d(AddStoreActivity.class.getName(), name);
-                store.setName(name);
-                store.setPoint(mapView.getMapCenter());
-                new AbstractProgressAsyncTask<Store>(AddStoreActivity.this, "Save store") {
+            protected String doInBackground(Store... stores) {
+                if (stores == null || stores.length < 1)
+                    return null;
+                JsonHelper.put(Constants.URL_STORE, AddStoreActivity.this, stores[0], Constants.JSON.NAME, Constants.JSON.LATITUDE, Constants.JSON.LONGITUDE);
+                return null;
 
-                    @Override
-                    protected String doInBackground(Store... stores) {
-                        if (stores == null || stores.length < 1)
-                            return null;
-                        JsonHelper.put(Constants.URL_STORE, AddStoreActivity.this, stores[0], Constants.JSON.NAME, Constants.JSON.LATITUDE, Constants.JSON.LONGITUDE);
-                        return null;
-
-                    }
-                }.execute(store);
-                finish();
             }
-        });
+
+            @Override
+            protected void onPostExecute(String jsonObject) {
+                super.onPostExecute(jsonObject);
+                if (view != null){
+                    overlayManager.getOverlay(OVERLAY).invokeLazyLoad(100);
+                }
+            }
+        }.execute(store);
 
     }
 
@@ -140,7 +150,7 @@ public class AddStoreActivity extends MapActivity {
 //        ImageView loaderanim = (ImageView) findViewById(R.id.loader);
 
         Drawable icon = boundCenter(getResources().getDrawable(R.drawable.shoppingcart));
-        ManagedOverlay managedOverlay = overlayManager.createOverlay("lazyloadOverlay", icon);
+        ManagedOverlay managedOverlay = overlayManager.createOverlay(OVERLAY, icon);
 
 
         managedOverlay.setOnOverlayGestureListener(new DummyListenerListener(){

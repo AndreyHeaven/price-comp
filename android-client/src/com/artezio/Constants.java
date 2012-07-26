@@ -21,6 +21,7 @@ public class Constants {
     public static final String TIME = "time";
     public static final String START_TIME = "now";
     public static final String PREFS_NAME = "MyPrefsFile";
+    public static final int RADIUS_DELTA = 500;
 
 
 
@@ -35,5 +36,9 @@ public class Constants {
         public static final String CODE = "code";
         public static final String STORE = "store";
         public static final String ID = "id";
+    }
+
+    public static class Prefs {
+        public static final String RADIUS = "radius";
     }
 }

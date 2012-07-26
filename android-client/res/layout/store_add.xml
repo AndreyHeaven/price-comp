@@ -20,11 +20,21 @@
                 android:layout_gravity="fill_horizontal" android:capitalize="sentences"
                 android:inputType="textCapSentences|textAutoCorrect" android:gravity="fill_horizontal"/>
     </GridLayout>
-    <Button
+    <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/Add"
-            android:id="@+id/addStoreButton" android:layout_gravity="center"/>
+            android:layout_height="wrap_content" android:id="@+id/linearLayout" android:layout_gravity="center">
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/AddAndClose" android:onClick="addStoreAndFinish"
+                android:id="@+id/addStoreButton" android:layout_gravity="center"/>
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/Add" android:onClick="addStore"
+                android:id="@+id/button" android:layout_gravity="center"/>
+    </LinearLayout>
     <com.google.android.maps.MapView
             android:id="@+id/mapview"
             android:layout_width="fill_parent"

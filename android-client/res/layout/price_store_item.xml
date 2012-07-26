@@ -11,13 +11,15 @@
               android:layout_height="?android:attr/listPreferredItemHeight"
               android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
               android:textAppearance="?android:attr/textAppearanceLarge"
-              android:gravity="center_vertical" android:layout_marginRight="16dp" android:layout_gravity="right|top"
-              android:layout_weight="2">
+              android:gravity="center_vertical" android:layout_marginRight="16dp" android:layout_gravity="center_vertical"
+              android:layout_weight="2" android:text="11" android:phoneNumber="true">
 
     </TextView>
     <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="?android:attr/listPreferredItemHeight"
             android:text="00"
-            android:id="@+id/minPrice" android:layout_gravity="center_vertical|right"/>
+            android:id="@+id/minPrice" android:layout_gravity="center_vertical|left|right"
+            android:textAppearance="?android:attr/textAppearanceLarge" android:layout_marginRight="10dp"
+            android:gravity="center_vertical"/>
 </LinearLayout>

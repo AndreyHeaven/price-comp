@@ -2,6 +2,7 @@ package com.artezio;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ExpandableListView;
 import android.widget.SimpleExpandableListAdapter;
+import android.widget.TextView;
 import com.artezio.model.Item;
 import com.artezio.model.Price;
 import com.artezio.model.Store;
@@ -17,10 +19,8 @@ import com.artezio.net.JsonHelper;
 import com.artezio.tasks.DownloadItemDetailsTask;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,14 +34,16 @@ public class PricesListActivity extends Activity {
     private ExpandableListView elvMain;
     private List<Map<String, String>> groupData;
     private List<List<Map<String, String>>> childData;
+    private TextView radius;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.prices);
+        radius = (TextView) findViewById(R.id.radiusTextView);
         Intent intent = getIntent();
-        String code = intent.getStringExtra(Constants.CODE);
+
         elvMain = (ExpandableListView) findViewById(R.id.expandableListView);
         elvMain.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
@@ -51,7 +53,7 @@ public class PricesListActivity extends Activity {
                     Store store = new Store(stringStringMap);
                     double lat = store.getLatitude() / 1e6;
                     double lon = store.getLongitude() / 1e6;
-                    Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("geo:" + lat + "," + lon + "?q="+lat+","+lon+"("+store.getName()+")"));
+                    Intent intent = new Intent(android.content.Intent.ACTION_VIEW, Uri.parse("geo:" + lat + "," + lon + "?q=" + lat + "," + lon + "(" + store.getName() + ")"));
                     startActivity(intent);
                     return true;
                 } else
@@ -80,7 +82,8 @@ public class PricesListActivity extends Activity {
         });
 //        adapter = new JsonAdapter(this, null, R.layout.price_list_item,new String[]{Constants.JSON.PRICE,Constants.JSON.STORE,Constants.JSON.DATE}, new int[]{R.id.priceTextView,R.id.storeTextView,R.id.dateTextView});
 //        setListAdapter(adapter);
-        updatePrices(code);
+
+        changeRadius(0);
     }
 
     private void updatePrices(String code) {
@@ -198,5 +201,32 @@ public class PricesListActivity extends Activity {
             }
         }
         return list;
+    }
+
+    public void plusRadius(View v) {
+        changeRadius(Constants.RADIUS_DELTA);
+    }
+
+    public void minusRadius(View v) {
+        changeRadius(-Constants.RADIUS_DELTA);
+    }
+
+    private void changeRadius(int i) {
+        int anInt = getRadius();
+        anInt = anInt + i;
+        anInt = Math.max(anInt, Constants.RADIUS_DELTA);
+        anInt = Math.min(anInt, Constants.RADIUS_DELTA * 10);
+        radius.setText(getResources().getString(R.string.radiusLabel,anInt/1000f));
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putInt(Constants.Prefs.RADIUS, anInt);
+        edit.commit();
+        updatePrices(getIntent().getStringExtra(Constants.CODE));
+    }
+
+    public int getRadius() {
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        return preferences.getInt(Constants.Prefs.RADIUS, Constants.RADIUS_DELTA);
+
     }
 }

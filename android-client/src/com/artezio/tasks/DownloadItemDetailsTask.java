@@ -24,7 +24,7 @@ public class DownloadItemDetailsTask extends AbstractProgressAsyncTask<String> {
         if (strings == null || strings.length < 1)
             return null;
         GeoPoint location = Utils.getLocationPoint(activity);
-        return downloadItemJson(strings[0], location);
+        return downloadItemJson(strings[0], location, activity.getRadius());
     }
 
     @Override
@@ -34,11 +34,11 @@ public class DownloadItemDetailsTask extends AbstractProgressAsyncTask<String> {
         activity.setItem(jsonObject);
     }
 
-    public String downloadItemJson(String code, GeoPoint location) {
+    public String downloadItemJson(String code, GeoPoint location, int radius) {
         if (location != null)
-            return JsonHelper.get(String.format(Constants.URL_ITEM, code, location.getLatitudeE6(), location.getLongitudeE6(), 500));
+            return JsonHelper.get(String.format(Constants.URL_ITEM, code, location.getLatitudeE6(), location.getLongitudeE6(), radius));
         else
-            return JsonHelper.get(String.format(Constants.URL_ITEM, code, null, null, null));
+            return JsonHelper.get(String.format(Constants.URL_ITEM, code, null, null, radius));
     }
 
 
