@@ -51,7 +51,7 @@ def add_price():
 
 
 @app.route('/good/<barcode>/<lat>/<long>/<acc>', methods=['GET'])
-def find_good(barcode, lat, long, acc):
+def find_prices(barcode, lat, long, acc):
     if barcode is not None and len(barcode) > 0:
         stores = get_array_of_stores(lat, long, acc)
         if len(stores) > 0:
@@ -65,6 +65,7 @@ def find_good(barcode, lat, long, acc):
 
                 array_of_prices = []
                 array_of_stores = []
+                stores_with_price = list()
                 for store in stores:
                     array_of_stores.append(
                             {'id': store.key().id(), 'name': store.name, 'lat': store.location.lat * 1e6,
@@ -76,9 +77,11 @@ def find_good(barcode, lat, long, acc):
                         array_of_prices.append(
                                 {'price': price.price, 'date': price.date.strftime("%Y-%m-%d"),
                                  'store': obj1.key().id()})
+                        stores_with_price.append(obj1.key().id())
                     except db.ReferencePropertyResolveError:
                         # Referenced entity was deleted or never existed.
                         pass
+                array_of_stores = filter(lambda a: a['id'] in stores_with_price,array_of_stores)
                 return json_response({'code': good.code, 'id': good.key().id(), 'stores': array_of_stores,
                                       'prices': array_of_prices})
             else:
