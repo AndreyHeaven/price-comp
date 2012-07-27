@@ -32,7 +32,7 @@ def add_price():
         try:
             storeId = body.get('store', None)
             if storeId is None:
-                return return_error({id: 503, msg: 'please select store'})
+                return return_error({'id': 503, 'msg': 'please select store'})
             storeId = int(storeId)
             store = Store.get_by_id(storeId)
             new_price.good = good
@@ -43,11 +43,11 @@ def add_price():
             new_price.put()
 
         except Exception:
-            return return_error({id: 500, msg: 'incorrect value'})
+            return return_error({'id': 500, 'msg': 'incorrect value'})
 
         return json_response({'message': 'OK'})
     else:
-        return return_error({id: 502, msg: 'invalid code !'})
+        return return_error({'id': 502, 'msg': 'invalid code !'})
 
 
 @app.route('/good/<barcode>/<lat>/<long>/<acc>', methods=['GET'])
@@ -85,11 +85,11 @@ def find_prices(barcode, lat, long, acc):
                 return json_response({'code': good.code, 'id': good.key().id(), 'stores': array_of_stores,
                                       'prices': array_of_prices})
             else:
-                return return_error({id: 402, msg: 'good not found !'})
+                return return_error({'id': 402, 'msg': 'good not found !'})
         else:
-            return return_error({id: 401, msg: 'stores not found !'})
+            return return_error({'id': 401, 'msg': 'stores not found !'})
     else:
-        return return_error({id: 502, msg: 'invalid code !'})
+        return return_error({'id': 502, 'msg': 'invalid code !'})
 
 
 @app.route('/store/<lat>/<lon>/<acc>', methods=['GET']) #?lat=<lat>&long=<long>&acc=<acc>
@@ -105,9 +105,9 @@ def get_stores(lat, lon, acc=500):
                          'date': find_stores.date.strftime("%Y-%m-%d")})
             return json_response(array_of_stores)
         else:
-            return return_error({id: 401, msg: 'stores not found !'})
+            return return_error({'id': 401, 'msg': 'stores not found !'})
     else:
-        return return_error({id: 501, msg: 'invalid lat or long !'})
+        return return_error({'id': 501, 'msg': 'invalid lat or long !'})
 
 
 @app.route('/store/', methods=['PUT'])
@@ -116,11 +116,10 @@ def add_store():
     latitude = body.get('lat', None)
     longitude = body.get('lon', None)
     name = body.get('name', None)
-    logging.debug("Store name %s and encoding %s", name, str(type(name)))
     stores = get_array_of_stores(latitude, longitude)
     for store in stores:
         if store.name == body.get('name'):
-            return return_error({id: 301, msg: 'can\'t add store, store with name already exist!'})
+            return return_error({'id': 301, 'msg': 'can\'t add store, store with name already exist!'})
     try:
         store = Store(location=db.GeoPt(int(latitude) / 1e6, int(longitude) / 1e6),
             name=name,
@@ -128,7 +127,7 @@ def add_store():
         store.update_location()
         store.put()
     except Exception:
-        return return_error({id: 500, msg: 'incorrect value'})
+        return return_error({'id': 500, 'msg': 'incorrect value'})
     return json_response({'message': 'OK'})
 
 

@@ -1,17 +1,19 @@
 package com.artezio;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.Location;
+import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import com.artezio.util.Utils;
-import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 
 import java.util.Collections;
@@ -37,7 +39,10 @@ public class MainActivity extends MapActivity {
         text = ((EditText) findViewById(R.id.barcodeText));
 //        final ImageButton button = (ImageButton) findViewById(R.id.buttonscan);
 //        buttonSearch = (ImageButton) findViewById(R.id.buttonSearch);
+
+
     }
+
 
     public void search(View view) {
         String code = text.getText().toString();
@@ -92,6 +97,34 @@ public class MainActivity extends MapActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (!isOnline()) {
+            new AlertDialog.Builder(this).setMessage(R.string.warn_not_connected_need_open_settings)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            startActivity(new Intent(Settings.ACTION_SETTINGS));
+                        }
+                    }).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                }
+            }).create().show();
+        }
+        if (!isLocationSourceEnabled()) {
+            new AlertDialog.Builder(this).setMessage(R.string.warn_location_unknown_need_open_settings)
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                        }
+                    }).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                }
+            }).create().show();
+        }
+
+    }
+
+    private boolean isLocationSourceEnabled() {
+        LocationManager locManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        return locManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
     @Override
@@ -131,7 +164,7 @@ public class MainActivity extends MapActivity {
     private Set<String> getHistory() {
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
         String string = preferences.getString(Constants.Prefs.HISTORY, null);
-        String[] split = string != null ? string.split(","): new String[0];
+        String[] split = string != null ? string.split(",") : new String[0];
         HashSet<String> strings = new HashSet<String>();
         Collections.addAll(strings, split);
         return strings;
@@ -145,5 +178,13 @@ public class MainActivity extends MapActivity {
                 text.setText(contents);
             }
         }
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        return cm.getActiveNetworkInfo() != null &&
+                cm.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 }

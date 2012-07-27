@@ -22,6 +22,8 @@
     <string name="error_incorrect_value">Incorect value</string>
     <string name="error_store_already_exist">Store with this name allready exists</string>
     <string name="menu_change_map_view">Change map view</string>
+    <string name="warn_not_connected_need_open_settings">Not connected.\r\nDo you want to open Settings?</string>
+    <string name="warn_location_unknown_need_open_settings">Location unknown.\r\nDo you want open Setings?</string>
 
     <string-array name="times_array">
         <item>5 min</item>
