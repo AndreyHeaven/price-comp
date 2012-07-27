@@ -20,6 +20,7 @@
     <string name="radiusLabel">%.1f км</string>
     <string name="AddAndClose">Добавить и закрыть</string>
     <string name="history">История</string>
+    <string name="menu_change_map_view">Сменить вид карты</string>
 
     <string-array name="times_array">
         <item>5 мин</item>

@@ -5,9 +5,8 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent">
     <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" android:id="@+id/linearLayout" android:layout_marginBottom="22dp">
+            android:layout_height="wrap_content" android:id="@+id/linearLayout">
         <TextView
                 android:layout_width="112dp"
                 android:layout_height="wrap_content"
