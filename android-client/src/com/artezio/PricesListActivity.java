@@ -160,16 +160,6 @@ public class PricesListActivity extends Activity {
     }
 
     private List<Map<String, String>> getPrices(int id, JSONArray jsonArray) throws JSONException {
-        ArrayList<Map<String, String>> maps = new ArrayList<Map<String, String>>();
-        maps.add(new HashMap<String, String>(){
-            {
-                put(Constants.JSON.PRICE,"123");
-                put(Constants.JSON.DATE,"123");
-            }
-        });
-        return maps;
-    }
-    /*private List<Map<String, String>> getPrices(int id, JSONArray jsonArray) throws JSONException {
         List<Map<String, String>> list = new ArrayList<Map<String, String>>();
         for (int i = 0; i < jsonArray.length(); i++) {
             Price price = new Price(jsonArray.getJSONObject(i));
@@ -180,7 +170,7 @@ public class PricesListActivity extends Activity {
             }
         }
         return list;
-    }*/
+    }
 
     public void plusRadius(View v) {
         changeRadius(Constants.RADIUS_DELTA);
