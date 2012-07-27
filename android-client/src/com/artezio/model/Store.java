@@ -30,11 +30,11 @@ public class Store extends JSONObject {
         super(copyFrom, new String[]{Constants.JSON.NAME,Constants.JSON.LATITUDE,Constants.JSON.LONGITUDE,Constants.JSON.ID});
     }
 
-    public String getKey(){
+    public int getKey(){
         try {
-            return getString(Constants.JSON.ID);
+            return getInt(Constants.JSON.ID);
         } catch (JSONException e) {
-            return null;
+            return 0;
         }
     }
     public String getName(){

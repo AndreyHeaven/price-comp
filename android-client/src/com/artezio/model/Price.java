@@ -34,14 +34,14 @@ public class Price extends JSONObject implements Serializable{
         try {
             put(Constants.JSON.PRICE,price);
         } catch (JSONException e) {
-
+           //
         }
     }
-    public void setStoreKey(String store){
+    public void setStoreKey(int store){
         try {
             put(Constants.JSON.STORE,store);
         } catch (JSONException e) {
-
+            //
         }
     }
 

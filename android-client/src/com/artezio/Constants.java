@@ -1,11 +1,9 @@
 package com.artezio;
 
 /**
- * Created with IntelliJ IDEA.
  * User: araigorodskiy
  * Date: 10.07.12
  * Time: 17:26
- * To change this template use File | Settings | File Templates.
  */
 public class Constants {
 
@@ -40,5 +38,6 @@ public class Constants {
 
     public static class Prefs {
         public static final String RADIUS = "radius";
+        public static final String HISTORY = "history";
     }
 }

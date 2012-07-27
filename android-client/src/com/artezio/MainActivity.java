@@ -3,6 +3,7 @@ package com.artezio;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,6 +13,9 @@ import android.widget.EditText;
 import com.artezio.util.Utils;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class MainActivity extends MapActivity {
 
@@ -69,6 +73,16 @@ public class MainActivity extends MapActivity {
                 Intent intent = new Intent(this, AddStoreActivity.class);
                 startActivity(intent);
                 break;
+            case R.id.menu_history:
+                final Set<String> history = getHistory();
+                final String[] items = history.toArray(new String[history.size()]);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                        .setTitle(R.string.history);
+                builder.setItems(items, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) {
+                        text.setText(items[item]);
+                    }
+                }).create().show();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -89,10 +103,25 @@ public class MainActivity extends MapActivity {
     }
 
     private void search(String code) {
+        saveToHistory(code);
         Intent myIntent = new Intent(this, PricesListActivity.class);
         myIntent.putExtra(Constants.CODE, code);
         startActivity(myIntent);
 //        new DownloadItemDetailsTask(this, myIntent).execute(code);
+    }
+
+    private void saveToHistory(String code) {
+        Set<String> stringSet = getHistory();
+        stringSet.add(code);
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor edit = preferences.edit();
+        edit.putStringSet(Constants.Prefs.HISTORY, stringSet);
+        edit.commit();
+    }
+
+    private Set<String> getHistory() {
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        return preferences.getStringSet(Constants.Prefs.HISTORY, new HashSet<String>());
     }
 
     public GeoPoint getSelectedLocation() {

@@ -18,6 +18,7 @@
     <string name="barCodeRequred">Barcode requred</string>
     <string name="radiusLabel">%.1f km</string>
     <string name="AddAndClose">Add and Close</string>
+    <string name="history">History</string>
 
     <string-array name="times_array">
         <item>5 min</item>
