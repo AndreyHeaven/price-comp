@@ -34,6 +34,7 @@ public class Constants {
         public static final String CODE = "code";
         public static final String STORE = "store";
         public static final String ID = "id";
+        public static final String ERROR = "error";
     }
 
     public static class Prefs {

@@ -1,5 +1,7 @@
 package com.artezio.tasks;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import com.artezio.Constants;
 import com.artezio.PricesListActivity;
 import com.artezio.net.JsonHelper;
@@ -31,7 +33,16 @@ public class DownloadItemDetailsTask extends AbstractProgressAsyncTask<String> {
     protected void onPostExecute(String jsonObject) {
         super.onPostExecute(jsonObject);
 //        intent.putExtra("item", jsonObject);
-        activity.setItem(jsonObject);
+        String s = JsonHelper.checkErrors(activity, jsonObject);
+        if (s != null) {
+            new AlertDialog.Builder(activity).setMessage(s)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    }).create().show();
+        } else {
+            activity.setItem(jsonObject);
+        }
     }
 
     public String downloadItemJson(String code, GeoPoint location, int radius) {

@@ -19,6 +19,8 @@
     <string name="radiusLabel">%.1f km</string>
     <string name="AddAndClose">Add and Close</string>
     <string name="history">History</string>
+    <string name="error_incorrect_value">Incorect value</string>
+    <string name="error_store_already_exist">Store with this name allready exists</string>
 
     <string-array name="times_array">
         <item>5 min</item>

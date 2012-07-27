@@ -5,6 +5,7 @@ import android.accounts.AccountManager;
 import android.content.Context;
 import android.util.Log;
 import com.artezio.Constants;
+import com.artezio.R;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -35,16 +36,20 @@ import java.util.*;
  * Time: 2:12 PM
  */
 public class JsonHelper {
+    private static Map<Integer,Integer> errors = new HashMap<Integer, Integer>(){{
+        put(500, R.string.error_incorrect_value);
+        put(301, R.string.error_store_already_exist);
+    }};
 
     public static String put(String url, Context context, JSONObject o, String... keys) {
         StringBuilder builder = new StringBuilder();
         HttpParams params = new BasicHttpParams();
         HttpProtocolParams.setContentCharset(params, "utf-8");
         HttpClient client = new DefaultHttpClient(params);
-        HttpPut httpPut = new HttpPut(Constants.APP_URL+url);
+        HttpPut httpPut = new HttpPut(Constants.APP_URL + url);
         httpPut.setHeader("charset", "utf-8");
         List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-        Account[] accounts= AccountManager.get(context).getAccountsByType("com.google");
+        Account[] accounts = AccountManager.get(context).getAccountsByType("com.google");
         String email = null;
         if (accounts.length > 0)
             email = accounts[0].name;
@@ -59,7 +64,7 @@ public class JsonHelper {
             pairs.add(new BasicNameValuePair("user", email));
 
         try {
-            httpPut.setEntity(new UrlEncodedFormEntity(pairs));
+            httpPut.setEntity(new UrlEncodedFormEntity(pairs,"utf-8"));
             HttpResponse response = client.execute(httpPut);
             StatusLine statusLine = response.getStatusLine();
             int statusCode = statusLine.getStatusCode();
@@ -72,7 +77,7 @@ public class JsonHelper {
                     builder.append(line);
                 }
             } else {
-                Log.e(JsonHelper.class.toString(), "Failed to upload json "+ o.toString());
+                Log.e(JsonHelper.class.toString(), "Failed to upload json " + o.toString());
             }
         } catch (ClientProtocolException e) {
             e.printStackTrace();
@@ -118,6 +123,7 @@ public class JsonHelper {
         }
         return map;
     }
+
     public static Map<String, String> toStringMap(JSONObject object) throws JSONException {
         Map<String, String> map = new HashMap<String, String>();
         Iterator keys = object.keys();
@@ -144,5 +150,17 @@ public class JsonHelper {
             list.add(fromJson(array.get(i)));
         }
         return list;
+    }
+
+    public static String checkErrors(Context context, String s){
+        JSONObject jsonObject = null;
+        try {
+            jsonObject = new JSONObject(s);
+            JSONObject string = jsonObject.getJSONObject(Constants.JSON.ERROR);
+            int anInt = string.getInt(Constants.JSON.ID);
+            return errors.get(anInt) != null ?  context.getResources().getString(errors.get(anInt)) : string.getString("msg");
+        } catch (JSONException e) {
+            return null;
+        }
     }
 }

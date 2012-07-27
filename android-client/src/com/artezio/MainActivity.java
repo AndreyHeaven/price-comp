@@ -14,7 +14,9 @@ import com.artezio.util.Utils;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public class MainActivity extends MapActivity {
@@ -115,35 +117,33 @@ public class MainActivity extends MapActivity {
         stringSet.add(code);
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor edit = preferences.edit();
-        edit.putStringSet(Constants.Prefs.HISTORY, stringSet);
+        StringBuilder sb = new StringBuilder();
+        for (Iterator<String> iterator = stringSet.iterator(); iterator.hasNext(); ) {
+            String s = iterator.next();
+            sb.append(s);
+            if (iterator.hasNext())
+                sb.append(',');
+        }
+        edit.putString(Constants.Prefs.HISTORY, sb.toString());
         edit.commit();
     }
 
     private Set<String> getHistory() {
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-        return preferences.getStringSet(Constants.Prefs.HISTORY, new HashSet<String>());
-    }
-
-    public GeoPoint getSelectedLocation() {
-        Location location = Utils.getLocation(this);
-        GeoPoint p = null;
-        if (location != null)
-            p = new GeoPoint((int) (location.getLatitude() * 1E6),
-                    (int) (location.getLongitude() * 1E6));
-        return p;
-//        return mapView.getMapCenter();
+        String string = preferences.getString(Constants.Prefs.HISTORY, null);
+        String[] split = string != null ? string.split(","): new String[0];
+        HashSet<String> strings = new HashSet<String>();
+        Collections.addAll(strings, split);
+        return strings;
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
                 String contents = intent.getStringExtra("SCAN_RESULT");
-                String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
+//                String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
                 text.setText(contents);
-//                search(contents);
             }
-//            else if (resultCode == RESULT_CANCELED) {
-//            }
         }
     }
 }

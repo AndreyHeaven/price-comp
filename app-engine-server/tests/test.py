@@ -8,7 +8,7 @@ app_url = 'http://localhost:8080/'
 def add_store():
     body = {
     #        'code':'666'
-    'name':'Магнит2'
+    'name':'Магнитggg2'
     #        ,'price':'30'
     ,'accuracy':'20'
     ,'lon':46006471

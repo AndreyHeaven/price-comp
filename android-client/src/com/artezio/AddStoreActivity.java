@@ -1,5 +1,7 @@
 package com.artezio;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
@@ -9,7 +11,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.artezio.model.Store;
@@ -106,16 +107,26 @@ public class AddStoreActivity extends MapActivity {
             protected String doInBackground(Store... stores) {
                 if (stores == null || stores.length < 1)
                     return null;
-                JsonHelper.put(Constants.URL_STORE, AddStoreActivity.this, stores[0], Constants.JSON.NAME, Constants.JSON.LATITUDE, Constants.JSON.LONGITUDE);
-                return null;
+
+                return JsonHelper.put(Constants.URL_STORE, AddStoreActivity.this, stores[0], Constants.JSON.NAME, Constants.JSON.LATITUDE, Constants.JSON.LONGITUDE);
 
             }
 
             @Override
             protected void onPostExecute(String jsonObject) {
                 super.onPostExecute(jsonObject);
-                if (view != null){
+                if (view != null) {
                     overlayManager.getOverlay(OVERLAY).invokeLazyLoad(100);
+                }
+                String s = JsonHelper.checkErrors(AddStoreActivity.this, jsonObject);
+                if (s != null) {
+                    new AlertDialog.Builder(AddStoreActivity.this).setMessage(s)
+                            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                }
+                            }).create().show();
+                } else {
+                    storeName.getText().clear();
                 }
             }
         }.execute(store);
@@ -139,12 +150,13 @@ public class AddStoreActivity extends MapActivity {
         super.onWindowFocusChanged(hasFocus);
 
     }
-    public static Drawable boundCenter(Drawable d)
-    {
-        d.setBounds(d.getIntrinsicWidth() /- 2, d.getIntrinsicHeight() / -2,
+
+    public static Drawable boundCenter(Drawable d) {
+        d.setBounds(d.getIntrinsicWidth() / -2, d.getIntrinsicHeight() / -2,
                 d.getIntrinsicWidth() / 2, d.getIntrinsicHeight() / 2);
         return d;
     }
+
     public void createOverlayWithLazyLoading() {
         //animation will be rendered to this ImageView
 //        ImageView loaderanim = (ImageView) findViewById(R.id.loader);
@@ -153,7 +165,7 @@ public class AddStoreActivity extends MapActivity {
         ManagedOverlay managedOverlay = overlayManager.createOverlay(OVERLAY, icon);
 
 
-        managedOverlay.setOnOverlayGestureListener(new DummyListenerListener(){
+        managedOverlay.setOnOverlayGestureListener(new DummyListenerListener() {
             @Override
             public boolean onSingleTap(MotionEvent e, ManagedOverlay overlay, GeoPoint point, ManagedOverlayItem item) {
                 if (item != null) {
@@ -175,11 +187,11 @@ public class AddStoreActivity extends MapActivity {
                 float[] floats = new float[1];
                 GeoPoint center = new GeoPoint(topLeft.getLatitudeE6() + rLat,
                         topLeft.getLongitudeE6() + rLon);
-                Location.distanceBetween(topLeft.getLatitudeE6()/1e6,topLeft.getLongitudeE6()/1e6,center.getLatitudeE6()/1e6,center.getLongitudeE6()/1e6,floats);
+                Location.distanceBetween(topLeft.getLatitudeE6() / 1e6, topLeft.getLongitudeE6() / 1e6, center.getLatitudeE6() / 1e6, center.getLongitudeE6() / 1e6, floats);
 
                 List<ManagedOverlayItem> items = new LinkedList<ManagedOverlayItem>();
                 try {
-                    String stores = DownloadStoresTask.getStores(center, (int)floats[0]);
+                    String stores = DownloadStoresTask.getStores(center, (int) floats[0]);
                     JSONArray arr = new JSONArray(stores);
                     for (int i = 0; i < arr.length(); i++) {
                         JSONObject point = arr.getJSONObject(i);
