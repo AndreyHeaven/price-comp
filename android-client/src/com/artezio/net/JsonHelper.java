@@ -156,9 +156,9 @@ public class JsonHelper {
         JSONObject jsonObject = null;
         try {
             jsonObject = new JSONObject(s);
-            JSONObject string = jsonObject.getJSONObject(Constants.JSON.ERROR);
-            int anInt = string.getInt(Constants.JSON.ID);
-            return errors.get(anInt) != null ?  context.getResources().getString(errors.get(anInt)) : string.getString("msg");
+            JSONObject object = jsonObject.getJSONObject(Constants.JSON.ERROR);
+            int anInt = object.getInt(Constants.JSON.ID);
+            return errors.get(anInt) != null ?  context.getResources().getString(errors.get(anInt)) : object.getString("msg");
         } catch (JSONException e) {
             return null;
         }
