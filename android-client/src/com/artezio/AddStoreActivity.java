@@ -17,8 +17,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 import com.artezio.model.Store;
 import com.artezio.net.JsonHelper;
+import com.artezio.net.OverpassHelper;
 import com.artezio.tasks.AbstractProgressAsyncTask;
-import com.artezio.tasks.DownloadStoresTask;
 import com.artezio.util.Utils;
 import com.google.android.maps.*;
 import de.android1.overlaymanager.ManagedOverlay;
@@ -27,11 +27,11 @@ import de.android1.overlaymanager.OverlayManager;
 import de.android1.overlaymanager.lazyload.DummyListenerListener;
 import de.android1.overlaymanager.lazyload.LazyLoadCallback;
 import de.android1.overlaymanager.lazyload.LazyLoadException;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * User: araigorodskiy
@@ -47,6 +47,32 @@ public class AddStoreActivity extends MapActivity {
     public static final float CIRCLE_RADIUS = 10;
     OverlayManager overlayManager;
     private MyLocationOverlay myLocationOverlay;
+
+    Map<String, Integer> icons = new HashMap<String, Integer>() {{
+        put("alcohol", R.drawable.shopping_alcohol_n_16);
+        put("", R.drawable.shopping_book_n_16);
+        put("butcher", R.drawable.shopping_butcher_n_16);
+        put("convenience", R.drawable.shopping_convenience_n_16);
+        put("supermarket", R.drawable.shopping_supermarket_n_16);
+        put("bakery", R.drawable.shopping_bakery_n_16);
+        put("bicycle", R.drawable.shopping_bicycle_n_16);
+        put("car", R.drawable.shopping_car_n_16);
+        put("car_repair", R.drawable.shopping_car_repair_n_16);
+        put("clothes", R.drawable.shopping_clothes_n_16);
+        put("confectionery", R.drawable.shopping_confectionery_n_16);
+        put("diy", R.drawable.shopping_diy_n_16);
+        put("fish", R.drawable.shopping_fish_n_16);
+        put("garden_centre", R.drawable.shopping_garden_centre_n_16);
+        put("gift", R.drawable.shopping_gift_n_16);
+        put("greengrocer", R.drawable.shopping_greengrocer_n_16);
+        put("hairdresser", R.drawable.shopping_hairdresser_n_16);
+        put("hifi", R.drawable.shopping_hifi_n_16);
+        put("jewelry", R.drawable.shopping_jewelry_n_16);
+        put("laundrette", R.drawable.shopping_laundrette_n_16);
+        put("motorcycle", R.drawable.shopping_motorcycle_n_16);
+        put("music", R.drawable.shopping_music_n_16);
+    }};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,13 +120,13 @@ public class AddStoreActivity extends MapActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.store_add,menu);
+        getMenuInflater().inflate(R.menu.store_add, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.menu_change_map_view:
                 mapView.setSatellite(!mapView.isSatellite());
                 break;
@@ -209,16 +235,15 @@ public class AddStoreActivity extends MapActivity {
 
                 List<ManagedOverlayItem> items = new LinkedList<ManagedOverlayItem>();
                 try {
-                    String stores = DownloadStoresTask.getStores(center, (int) floats[0]);
-                    JSONArray arr = new JSONArray(stores);
-                    for (int i = 0; i < arr.length(); i++) {
-                        JSONObject point = arr.getJSONObject(i);
-                        Store store = new Store(point);
+                    List<Store> shops = OverpassHelper.getShops(AddStoreActivity.this, topLeft.getLatitudeE6() / 1e6, topLeft.getLongitudeE6() / 1e6, bottomRight.getLatitudeE6() / 1e6, bottomRight.getLongitudeE6() / 1e6, 100);
+                    for (Store store : shops) {
                         ManagedOverlayItem item = new ManagedOverlayItem(new GeoPoint(store.getLatitude(), store.getLongitude()), store.getName(), store.getName());
+                        String type = store.getType();
+                        if (type != null && icons.get(type) != null) {
+                            item.setMarker(boundCenter(getResources().getDrawable(icons.get(type))));
+                        }
                         items.add(item);
                     }
-                    // lets simulate a latency
-//                    TimeUnit.SECONDS.sleep(1);
                 } catch (Exception e) {
                     throw new LazyLoadException(e.getMessage());
                 }

@@ -78,4 +78,28 @@ public class Store extends JSONObject {
         }
 
     }
+
+    public void setOsmId(int id) {
+        try {
+            put(Constants.JSON.OSM_ID,id);
+        } catch (JSONException e) {
+            //
+        }
+    }
+
+    public void setType(String shop) {
+        try {
+            put(Constants.JSON.TYPE,shop);
+        } catch (JSONException e) {
+            //
+        }
+    }
+
+    public String getType() {
+        try {
+            return getString(Constants.JSON.TYPE);
+        } catch (JSONException e) {
+            return null;
+        }
+    }
 }

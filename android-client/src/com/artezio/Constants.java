@@ -35,6 +35,8 @@ public class Constants {
         public static final String STORE = "store";
         public static final String ID = "id";
         public static final String ERROR = "error";
+        public static final String OSM_ID = "osm_id";
+        public static final String TYPE = "type";
     }
 
     public static class Prefs {
