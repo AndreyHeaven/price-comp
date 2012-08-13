@@ -37,10 +37,6 @@ public class MainActivity extends MapActivity {
         Utils.getLocation(this);
         setContentView(R.layout.main);
         text = ((EditText) findViewById(R.id.barcodeText));
-//        final ImageButton button = (ImageButton) findViewById(R.id.buttonscan);
-//        buttonSearch = (ImageButton) findViewById(R.id.buttonSearch);
-
-
     }
 
 
