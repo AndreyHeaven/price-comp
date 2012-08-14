@@ -19,6 +19,7 @@ import com.artezio.model.Store;
 import com.artezio.net.JsonHelper;
 import com.artezio.net.OverpassHelper;
 import com.artezio.tasks.AbstractProgressAsyncTask;
+import com.artezio.util.StoreManager;
 import com.artezio.util.Utils;
 import com.google.android.maps.*;
 import de.android1.overlaymanager.ManagedOverlay;
@@ -50,7 +51,7 @@ public class AddStoreActivity extends MapActivity {
 
     Map<String, Integer> icons = new HashMap<String, Integer>() {{
         put("alcohol", R.drawable.shopping_alcohol_n_16);
-        put("", R.drawable.shopping_book_n_16);
+        put("book", R.drawable.shopping_book_n_16);
         put("butcher", R.drawable.shopping_butcher_n_16);
         put("convenience", R.drawable.shopping_convenience_n_16);
         put("supermarket", R.drawable.shopping_supermarket_n_16);
@@ -226,16 +227,21 @@ public class AddStoreActivity extends MapActivity {
         managedOverlay.setLazyLoadCallback(new LazyLoadCallback() {
             @Override
             public List<ManagedOverlayItem> lazyload(GeoPoint topLeft, GeoPoint bottomRight, ManagedOverlay overlay) throws LazyLoadException {
+                double sLat = topLeft.getLatitudeE6() / 1e6;
+                double wLon = topLeft.getLongitudeE6() / 1e6;
+                double nLat = bottomRight.getLatitudeE6() / 1e6;
+                double eLon = bottomRight.getLongitudeE6() / 1e6;
                 int rLat = (bottomRight.getLatitudeE6() - topLeft.getLatitudeE6()) / 2;
                 int rLon = (bottomRight.getLongitudeE6() - topLeft.getLongitudeE6()) / 2;
                 float[] floats = new float[1];
                 GeoPoint center = new GeoPoint(topLeft.getLatitudeE6() + rLat,
                         topLeft.getLongitudeE6() + rLon);
-                Location.distanceBetween(topLeft.getLatitudeE6() / 1e6, topLeft.getLongitudeE6() / 1e6, center.getLatitudeE6() / 1e6, center.getLongitudeE6() / 1e6, floats);
+                Location.distanceBetween(sLat, wLon, center.getLatitudeE6() / 1e6, center.getLongitudeE6() / 1e6, floats);
 
                 List<ManagedOverlayItem> items = new LinkedList<ManagedOverlayItem>();
                 try {
-                    List<Store> shops = OverpassHelper.getShops(AddStoreActivity.this, topLeft.getLatitudeE6() / 1e6, topLeft.getLongitudeE6() / 1e6, bottomRight.getLatitudeE6() / 1e6, bottomRight.getLongitudeE6() / 1e6, 100);
+                    List<Store> shops = new StoreManager(getBaseContext()).getInArea(nLat, eLon, sLat, wLon);
+//                    List<Store> shops = OverpassHelper.getShops(AddStoreActivity.this, sLat, wLon, nLat, eLon, 100);
                     for (Store store : shops) {
                         ManagedOverlayItem item = new ManagedOverlayItem(new GeoPoint(store.getLatitude(), store.getLongitude()), store.getName(), store.getName());
                         String type = store.getType();

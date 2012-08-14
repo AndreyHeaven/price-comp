@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class OverpassHelper {
 
-    public static List<Store> getShops(Context context, double s, double n, double w, double e, int count) {
+    public static List<Store> getShops(Context context, double s, double w, double n, double e, int count) {
 //        "[out:json];\n" +
 //                "(\n" +
 //                "way\n" +
@@ -37,15 +37,15 @@ public class OverpassHelper {
         StringBuilder builder = new StringBuilder("[out:json];");
         builder.append('(');
         builder.append("way[shop][building=yes]").append("(")
+                .append(s).append(',')
                 .append(w).append(',')
                 .append(n).append(',')
-                .append(s).append(',')
                 .append(e)
                 .append(");");
         builder.append("node[shop]").append("(")
+                .append(s).append(',')
                 .append(w).append(',')
                 .append(n).append(',')
-                .append(s).append(',')
                 .append(e)
                 .append(");");
         builder.append(");");
@@ -55,7 +55,7 @@ public class OverpassHelper {
         String post = JsonHelper.post("http://overpass-api.de/api/interpreter", context, map, false);
         try {
 
-            JSONObject obj = new JSONObject(post);
+;            JSONObject obj = new JSONObject(post);
             JSONArray arr = obj.getJSONArray("elements");
             List<Store> stores = new ArrayList<Store>();
             for (int i = 0; i < arr.length(); i++) {
