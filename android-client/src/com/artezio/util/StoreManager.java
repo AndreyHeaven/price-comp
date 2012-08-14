@@ -15,7 +15,9 @@ import com.beoui.geocell.model.CostFunction;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,6 +32,8 @@ public class StoreManager {
 
     private Context ctx;
     private int i;
+    private static final long WEEK = 1000 * 60 * 60 * 24 * 7;
+
 
     public StoreManager(Context ctx) {
         this.ctx = ctx;
@@ -42,43 +46,64 @@ public class StoreManager {
         List<String> cells = GeocellManager.bestBboxSearchCells(bb, new CostFunction() {
 
             public double defaultCostFunction(int numCells, int resolution) {
-
-
-                if (resolution == i) {
-                    return 0;
-                } else {
-                    return Double.MAX_VALUE;
-                }
+                return resolution == i ? 0 : Double.MAX_VALUE;
             }
         });
-        cells = excludeCells(cells);
-        List<Store> shops = new ArrayList<Store>();
-        for (String cell : cells) {
-            BoundingBox box = GeocellUtils.computeBox(cell);
-            shops.addAll(OverpassHelper.getShops(ctx, box.getSouth(), box.getWest(), box.getNorth(), box.getEast(), 100));
-        }
-        return shops;
+
+        final List<String> finalCells = new ArrayList<String>();
+        final List<String> inCache = new ArrayList<String>();
+        excludeCells(cells,inCache,finalCells);
+        if (!cells.isEmpty())
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    List<Store> shops = new ArrayList<Store>();
+                    for (String cell : finalCells) {
+                        BoundingBox box = GeocellUtils.computeBox(cell);
+                        List<Store> s = OverpassHelper.getShops(ctx, box.getSouth(), box.getWest(), box.getNorth(), box.getEast(), 100);
+                        shops.addAll(s);
+                    }
+                }
+            }).start();
+        return loadFromCache(inCache);
     }
 
-    private List<String> excludeCells(List<String> cells) {
-        File root = new File(Environment.getExternalStorageDirectory(),".price-comp");
+    private List<Store> loadFromCache(final List<String> inCache) {
+        File root = new File(Environment.getExternalStorageDirectory(), ".price-comp");
         if (!root.exists()) {
             if (!root.mkdirs()) {
-                Log.e(getClass().getName()+" :: ", "Problem creating Image folder");
+                Log.e(getClass().getName() + " :: ", "Problem creating Image folder");
+                return new ArrayList<Store>();
             }
         }
-        File[] files = root.listFiles(new FileFilter() {
+        root.listFiles(new FilenameFilter() {
             @Override
-            public boolean accept(File pathname) {
-                return pathname.isDirectory();
+            public boolean accept(File file, String s) {
+                return inCache.contains(s);
             }
         });
-        for (File file : files) {
-            if (cells.contains(file.getName())){
+        return new ArrayList<Store>(); //TODO implement
+    }
 
+    private void excludeCells(List<String> cells, List<String> inCache,List<String> needtoload) {
+        File root = new File(Environment.getExternalStorageDirectory(), ".price-comp");
+        if (!root.exists()) {
+            if (!root.mkdirs()) {
+                Log.e(getClass().getName() + " :: ", "Problem creating Image folder");
+                return;
             }
         }
-        return cells;//TODO exclude cells that present in cache and alive
+        List<String> files = Arrays.asList(root.list());
+        for (String cell : cells) {
+            File file = new File(root,cell);
+            if (!files.contains(cell)) {
+                needtoload.add(cell);
+            } else if (file.lastModified() + WEEK > System.currentTimeMillis()){
+                file.delete();
+                needtoload.add(cell);
+            } else
+                inCache.add(cell);
+        }
     }
 
     private int getResolution() {
