@@ -27,7 +27,7 @@ public class Store extends JSONObject {
     }
 
     public Store(JSONObject copyFrom) throws JSONException {
-        super(copyFrom, new String[]{Constants.JSON.NAME,Constants.JSON.LATITUDE,Constants.JSON.LONGITUDE,Constants.JSON.ID});
+        super(copyFrom, new String[]{Constants.JSON.NAME,Constants.JSON.LATITUDE,Constants.JSON.LONGITUDE,Constants.JSON.ID,Constants.JSON.TYPE,Constants.JSON.OSM_ID});
     }
 
     public int getKey(){

@@ -55,7 +55,7 @@ public class OverpassHelper {
         String post = JsonHelper.post("http://overpass-api.de/api/interpreter", context, map, false);
         try {
 
-;            JSONObject obj = new JSONObject(post);
+            JSONObject obj = new JSONObject(post);
             JSONArray arr = obj.getJSONArray("elements");
             List<Store> stores = new ArrayList<Store>();
             for (int i = 0; i < arr.length(); i++) {
@@ -69,7 +69,7 @@ public class OverpassHelper {
                     try {
                         store.setName(tags.getString("name"));
                     } catch (JSONException ex) {
-                        store.setName("--");
+//                        store.setName("--");
                     }
                     stores.add(store);
                 } catch (JSONException ex) {

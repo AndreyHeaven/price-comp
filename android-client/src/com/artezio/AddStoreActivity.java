@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+import com.artezio.model.Downloadable;
 import com.artezio.model.Store;
 import com.artezio.net.JsonHelper;
 import com.artezio.net.OverpassHelper;
@@ -207,7 +208,7 @@ public class AddStoreActivity extends MapActivity {
 //        ImageView loaderanim = (ImageView) findViewById(R.id.loader);
 
         Drawable icon = boundCenter(getResources().getDrawable(R.drawable.shoppingcart));
-        ManagedOverlay managedOverlay = overlayManager.createOverlay(OVERLAY, icon);
+        final ManagedOverlay managedOverlay = overlayManager.createOverlay(OVERLAY, icon);
 
 
         managedOverlay.setOnOverlayGestureListener(new DummyListenerListener() {
@@ -240,7 +241,12 @@ public class AddStoreActivity extends MapActivity {
 
                 List<ManagedOverlayItem> items = new LinkedList<ManagedOverlayItem>();
                 try {
-                    List<Store> shops = new StoreManager(getBaseContext()).getInArea(nLat, eLon, sLat, wLon);
+                    List<Store> shops = new StoreManager(getBaseContext()).getInArea(nLat, eLon, sLat, wLon, new Downloadable() {
+                        @Override
+                        public void loaded(List<Store> stores) {
+                            managedOverlay.invokeLazyLoad(0);
+                        }
+                    });
 //                    List<Store> shops = OverpassHelper.getShops(AddStoreActivity.this, sLat, wLon, nLat, eLon, 100);
                     for (Store store : shops) {
                         ManagedOverlayItem item = new ManagedOverlayItem(new GeoPoint(store.getLatitude(), store.getLongitude()), store.getName(), store.getName());

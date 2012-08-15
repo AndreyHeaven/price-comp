@@ -6,16 +6,17 @@ import android.net.NetworkInfo;
 import android.os.Environment;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import com.artezio.model.Downloadable;
 import com.artezio.model.Store;
 import com.artezio.net.OverpassHelper;
 import com.beoui.geocell.GeocellManager;
 import com.beoui.geocell.GeocellUtils;
 import com.beoui.geocell.model.BoundingBox;
 import com.beoui.geocell.model.CostFunction;
+import org.json.JSONArray;
+import org.json.JSONException;
 
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,7 +42,7 @@ public class StoreManager {
 //        i = getResolution();
     }
 
-    public List<Store> getInArea(double north, double east, double south, double west) {
+    public List<Store> getInArea(double north, double east, double south, double west, final Downloadable runnable) {
         BoundingBox bb = new BoundingBox(north, east, south, west);
         List<String> cells = GeocellManager.bestBboxSearchCells(bb, new CostFunction() {
 
@@ -49,11 +50,18 @@ public class StoreManager {
                 return resolution == i ? 0 : Double.MAX_VALUE;
             }
         });
-
         final List<String> finalCells = new ArrayList<String>();
-        final List<String> inCache = new ArrayList<String>();
-        excludeCells(cells,inCache,finalCells);
-        if (!cells.isEmpty())
+        List<Store> result = new ArrayList<Store>();
+        for (String cell : cells) {
+            List<Store> shops = getFromCache(cell);
+            if (shops == null) {
+                finalCells.add(cell);
+            } else {
+                result.addAll(shops);
+            }
+        }
+
+        if (!finalCells.isEmpty())
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -61,21 +69,88 @@ public class StoreManager {
                     for (String cell : finalCells) {
                         BoundingBox box = GeocellUtils.computeBox(cell);
                         List<Store> s = OverpassHelper.getShops(ctx, box.getSouth(), box.getWest(), box.getNorth(), box.getEast(), 100);
+                        putToCache(cell,s);
                         shops.addAll(s);
                     }
+                    runnable.loaded(shops);
                 }
             }).start();
-        return loadFromCache(inCache);
+        return result;
+    }
+
+    private void putToCache(String cell, List<Store> s) {
+        File storageFolder = getStorageFolder();
+        if (storageFolder != null){
+            File file = new File(storageFolder,cell);
+            file.delete();
+            FileWriter fileWriter = null;
+            try {
+                fileWriter = new FileWriter(file);
+                JSONArray jsonArray = new JSONArray(s);
+                fileWriter.write(jsonArray.toString());
+            } catch (IOException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            } finally {
+                if (fileWriter != null) {
+                    try {
+                        fileWriter.close();
+                    } catch (IOException e) {
+                        //
+                    }
+                }
+            }
+        }
+        //To change body of created methods use File | Settings | File Templates.
+    }
+
+    private List<Store> getFromCache(String cell) {
+        File storageFolder = getStorageFolder();
+        File file = new File(storageFolder,cell);
+        if (file.exists()){
+            if (System.currentTimeMillis() - file.lastModified() > WEEK){
+                file.delete();
+                return null;
+            } else return loadCell(file);
+        }
+        return null;  //To change body of created methods use File | Settings | File Templates.
+    }
+
+    private List<Store> loadCell(File file) {
+        FileReader in = null;
+        try {
+            in = new FileReader(file);
+            StringWriter out = new StringWriter();
+            char[] buf = new char[1024];
+            int len;
+            while ((len = in.read(buf)) > 0){
+                out.write(buf, 0, len);
+            }
+            List<Store> stores = new ArrayList<Store>();
+            JSONArray jsonArray = new JSONArray(out.toString());
+            for(int i = 0; i<jsonArray.length();i++){
+                stores.add(new Store(jsonArray.getJSONObject(i)));
+            }
+            return stores;
+        } catch (IOException e) {
+            file.delete();
+            return null;
+        } catch (JSONException e) {
+            file.delete();
+            return null;
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    //
+                }
+            }
+        }
     }
 
     private List<Store> loadFromCache(final List<String> inCache) {
-        File root = new File(Environment.getExternalStorageDirectory(), ".price-comp");
-        if (!root.exists()) {
-            if (!root.mkdirs()) {
-                Log.e(getClass().getName() + " :: ", "Problem creating Image folder");
-                return new ArrayList<Store>();
-            }
-        }
+        File root = getStorageFolder();
+        if (root != null)
         root.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File file, String s) {
@@ -84,7 +159,16 @@ public class StoreManager {
         });
         return new ArrayList<Store>(); //TODO implement
     }
-
+    private File getStorageFolder(){
+        File root = new File(Environment.getExternalStorageDirectory(), ".price-comp");
+        if (!root.exists()) {
+            if (!root.mkdirs()) {
+                Log.e(getClass().getName() + " :: ", "Problem creating Image folder");
+                return null;
+            }
+        }
+        return root;
+    }
     private void excludeCells(List<String> cells, List<String> inCache,List<String> needtoload) {
         File root = new File(Environment.getExternalStorageDirectory(), ".price-comp");
         if (!root.exists()) {

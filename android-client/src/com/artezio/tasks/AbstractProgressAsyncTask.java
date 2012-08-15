@@ -11,13 +11,19 @@ import android.os.AsyncTask;
  */
 public abstract class AbstractProgressAsyncTask<T> extends AsyncTask<T, Void, String> {
     private ProgressDialog progress;
+    private Context context;
 
-    public AbstractProgressAsyncTask(Context mainActivity, String msg) {
-        progress = new ProgressDialog(mainActivity);
+    public AbstractProgressAsyncTask(Context context, String msg) {
+        this.context = context;
+        progress = new ProgressDialog(context);
         progress.setIndeterminate(true);
         progress.setMessage(msg);
 //        mainActivity.getResources().getString(R.string.label, intent.getStringExtra(Constants.CODE))
 
+    }
+
+    public Context getContext() {
+        return context;
     }
 
     @Override
