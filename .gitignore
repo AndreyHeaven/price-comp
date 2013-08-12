@@ -1,1 +1,6 @@
 /android-client/gen/*
+/android-client/out/*
+/android-client/.idea/*
+/app-engine-server/.idea/*
+**.pyc
+**.iml
