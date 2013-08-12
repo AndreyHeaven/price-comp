@@ -1,11 +1,16 @@
 package com.artezio;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.artezio.util.Utils;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -48,7 +53,7 @@ public class JsonAdapter extends BaseAdapter {
         return data != null ? data.length() : 0;
     }
 
-    public void setData(JSONArray data){
+    public void setData(JSONArray data) {
         this.data = data;
         notifyDataSetChanged();
     }
@@ -118,7 +123,7 @@ public class JsonAdapter extends BaseAdapter {
         for (int i = 0; i < count; i++) {
             final View v = holder[i];
             if (v != null) {
-                final String data;
+                String data = null;
                 String text = null;
                 try {
                     data = dataSet.getString(from[i]);
@@ -152,25 +157,21 @@ public class JsonAdapter extends BaseAdapter {
                     // Note: keep the instanceof TextView check at the bottom of these
                     // ifs since a lot of views are TextViews (e.g. CheckBoxes).
                     setViewText((TextView) v, text);
+                } else if (v instanceof ImageView) {
+                    setViewImage((ImageView) v, Utils.getDrawableResourceByName(view.getContext(), "shopping_"+data+"_n_16"));
+                } else {
+                    throw new IllegalStateException(v.getClass().getName() + " is not a " +
+                            " view that can be bounds by this SimpleAdapter");
                 }
-/*
-                    else if (v instanceof ImageView) {
-                        if (data instanceof Integer) {
-                            setViewImage((ImageView) v, (Integer) data);
-                        } else {
-                            setViewImage((ImageView) v, text);
-                        }
-*/
-            } else {
-                throw new IllegalStateException(v.getClass().getName() + " is not a " +
-                        " view that can be bounds by this SimpleAdapter");
             }
-//                }
         }
 //        }
     }
 
     public void setViewText(TextView v, String text) {
         v.setText(text);
+    }
+    public void setViewImage(ImageView v, Drawable text) {
+        v.setImageDrawable(text);
     }
 }

@@ -24,6 +24,8 @@
     <string name="menu_change_map_view">Change map view</string>
     <string name="warn_not_connected_need_open_settings">Not connected.\r\nDo you want to open Settings?</string>
     <string name="warn_location_unknown_need_open_settings">Location unknown.\r\nDo you want open Setings?</string>
+    <string name="addStoreDesc">Dont add existing shops, please!</string>
+    <string name="car_repair">Car repair</string>
 
     <string-array name="times_array">
         <item>5 min</item>

@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -115,4 +116,24 @@ public class Utils {
         location = l;
     }
 
+    public static String getStringResourceByName(Context context,String aString) {
+        String packageName = context.getPackageName();
+        int resId = context.getResources()
+                .getIdentifier(aString, "string", packageName);
+        if (resId == 0) {
+            return aString;
+        } else {
+            return context.getString(resId);
+        }
+    }
+    public static Drawable getDrawableResourceByName(Context context, String aString) {
+        String packageName = context.getPackageName();
+        int resId = context.getResources()
+                .getIdentifier(aString, "drawable", packageName);
+        if (resId == 0) {
+            return null;
+        } else {
+            return context.getResources().getDrawable(resId);
+        }
+    }
 }

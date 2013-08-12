@@ -55,13 +55,27 @@ public class AddPriceActivity extends Activity {
             Store actualStore = getActualStore();
             if (actualStore != null) {
                 p.setStoreKey(actualStore.getKey());
+                p.setStoreName(actualStore.getName());
+                try {
+                    p.put(Constants.JSON.LATITUDE, actualStore.getLatitude());
+                    p.put(Constants.JSON.LONGITUDE,actualStore.getLongitude());
+                } catch (JSONException e) {
+
+                }
                 new AbstractProgressAsyncTask<Price>(AddPriceActivity.this, "Save price") {
 
                     @Override
                     protected String doInBackground(Price... prices) {
                         if (prices == null || prices.length < 1)
                             return null;
-                        return JsonHelper.put(Constants.URL_ADD_PRICE, AddPriceActivity.this, prices[0], Constants.JSON.CODE, Constants.JSON.PRICE, Constants.JSON.STORE);
+                        return JsonHelper.put(Constants.URL_ADD_PRICE, AddPriceActivity.this, prices[0],
+                                Constants.JSON.CODE,
+                                Constants.JSON.PRICE,
+                                Constants.JSON.OSM_ID,
+                                Constants.JSON.STORE,
+                                Constants.JSON.LATITUDE,
+                                Constants.JSON.LONGITUDE
+                                );
                     }
                 }.execute(p);
                 finish();

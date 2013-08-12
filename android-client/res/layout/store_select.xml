@@ -18,13 +18,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/spinnerTime"/>
     </LinearLayout>
-    <!--<com.google.android.maps.MapView
-                android:id="@+id/mapview"
-                android:layout_width="fill_parent"
-                android:layout_height="130dp"
-                android:clickable="true"
-                android:apiKey="0fNkg_i2Wi_c5zx2eftKRfJ-1Z8-OOVKXmNQGfw"
-                />-->
+
     <ListView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

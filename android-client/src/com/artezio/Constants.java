@@ -5,12 +5,12 @@ package com.artezio;
  * Date: 10.07.12
  * Time: 17:26
  */
-public class Constants {
+public interface Constants {
 
     public static final String CODE = "SCAN_RESULT";
     public static final String GOODSMATRIX_MOBILE = "http://goodsmatrix.ru/mobile/%s.html";
-    public static final String APP_URL = "http://price-comp.appspot.com";
-//    public static final String APP_URL = "http://10.99.44.50:8080";
+//    public static final String APP_URL = "http://price-comp.appspot.com";
+    public static final String APP_URL = "http://10.99.44.131:8181";
     public static final String URL_ITEM = "/good/%s/%s/%s/%s";
     public static final String URL_ADD_PRICE = "/price/";
     public static final String URL_STORE = "/store/";
@@ -23,7 +23,7 @@ public class Constants {
 
 
 
-    public static class JSON {
+    public static interface JSON {
         public static final String NAME = "name";
         public static final String ITEM = "item";
         public static final String PRICES = "prices";
@@ -39,7 +39,7 @@ public class Constants {
         public static final String TYPE = "type";
     }
 
-    public static class Prefs {
+    public static interface Prefs {
         public static final String RADIUS = "radius";
         public static final String HISTORY = "history";
     }

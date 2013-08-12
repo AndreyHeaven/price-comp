@@ -1,9 +1,13 @@
 package com.artezio.net;
 
 import android.content.Context;
+
 import com.artezio.Constants;
+import com.artezio.R;
 import com.artezio.model.Store;
+import com.artezio.util.Utils;
 import com.google.android.maps.GeoPoint;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -71,6 +75,11 @@ public class OverpassHelper {
                     } catch (JSONException ex) {
 //                        store.setName("--");
                     }
+                    if (store.getName() == null)
+                        if (store.getType() != null)
+                            store.setName(Utils.getStringResourceByName(context, store.getType()));
+                        else
+                            store.setName("--");
                     stores.add(store);
                 } catch (JSONException ex) {
                     //
@@ -81,4 +90,6 @@ public class OverpassHelper {
             return new ArrayList<Store>();
         }
     }
+
+
 }

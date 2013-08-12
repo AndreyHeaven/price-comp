@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
+              android:orientation="horizontal"
               android:layout_width="fill_parent"
               android:layout_height="fill_parent">
+    <LinearLayout android:orientation="vertical"
+                  android:layout_width="238dp"
+                  android:layout_height="fill_parent">
     <GridLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" android:id="@+id/gridLayout"
@@ -32,12 +35,13 @@
 
         <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="fill_parent"
+                android:layout_height="wrap_content"
                 android:text="@string/addStoreDesc"
                 android:id="@+id/textView2"
-                android:gravity="center_vertical|center_horizontal"/>
+                android:layout_gravity="left|center_vertical"/>
     </LinearLayout>
 
+    </LinearLayout>
     <com.google.android.maps.MapView
             android:id="@+id/mapview"
             android:layout_width="fill_parent"

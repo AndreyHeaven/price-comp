@@ -1,16 +1,29 @@
-from google.appengine.ext import db
+from google.appengine.ext import ndb
 import geo.geomodel
-class Good(db.Model):
-    code = db.StringProperty()
 
-class Store(geo.geomodel.GeoModel):
-    name = db.StringProperty()
-    date = db.DateProperty()
 
-class Price(db.Model):
-    good = db.ReferenceProperty(Good)
-    price = db.FloatProperty()
-    user = db.StringProperty()
-    date = db.DateProperty()
-    store = db.ReferenceProperty(Store)
+class Good(ndb.Model):
+    code = ndb.StringProperty()
+
+    @classmethod
+    def find_by_code(cls, code):
+        return cls.query(cls.code == code)
+
+
+class Store(geo.geomodel.GeoModel, ndb.Model):
+    name = ndb.StringProperty()
+    date = ndb.DateProperty(auto_now_add=True)
+    code = ndb.StringProperty(indexed=True)
+
+    @classmethod
+    def find_by_code(cls, code):
+        return cls.query(cls.code == code)
+
+
+class Price(ndb.Model):
+    good = ndb.KeyProperty(Good)
+    price = ndb.FloatProperty()
+    user = ndb.StringProperty()
+    date = ndb.DateProperty(auto_now_add=True)
+    store = ndb.KeyProperty(Store)
 

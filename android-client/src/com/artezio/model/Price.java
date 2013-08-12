@@ -39,7 +39,7 @@ public class Price extends JSONObject implements Serializable{
     }
     public void setStoreKey(int store){
         try {
-            put(Constants.JSON.STORE,store);
+            put(Constants.JSON.OSM_ID,"osmId:"+store);
         } catch (JSONException e) {
             //
         }
@@ -58,6 +58,14 @@ public class Price extends JSONObject implements Serializable{
             return getInt(Constants.JSON.STORE);
         } catch (JSONException e) {
             return 0;
+        }
+    }
+
+    public void setStoreName(String name) {
+        try {
+            put(Constants.JSON.STORE,name);
+        } catch (JSONException e) {
+            //
         }
     }
 }

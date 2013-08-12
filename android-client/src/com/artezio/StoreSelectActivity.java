@@ -59,7 +59,7 @@ public class StoreSelectActivity extends Activity {
                 finish();
             }
         });
-        storesAdapter = new JsonAdapter(this, R.layout.store_list_view, new String[]{Constants.JSON.NAME}, new int[]{R.id.nameTextView});
+        storesAdapter = new JsonAdapter(this, R.layout.store_list_view, new String[]{Constants.JSON.TYPE,Constants.JSON.NAME}, new int[]{R.id.imageView,R.id.nameTextView});
         list.setAdapter(storesAdapter);
 
         updateList();

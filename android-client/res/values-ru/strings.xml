@@ -21,6 +21,8 @@
     <string name="AddAndClose">Добавить и закрыть</string>
     <string name="history">История</string>
     <string name="menu_change_map_view">Сменить вид карты</string>
+    <string name="addStoreDesc">Пожалуйста не добавляйте существующие магазины!</string>
+    <string name="car_repair">СТО</string>
 
     <string-array name="times_array">
         <item>5 мин</item>
