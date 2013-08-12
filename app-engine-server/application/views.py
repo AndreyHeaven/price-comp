@@ -60,34 +60,25 @@ def find_prices(barcode, lat, lng, acc):
     if barcode is not None and len(barcode) > 0:
         stores = get_array_of_stores(lat, lng, acc)
         if len(stores) > 0:
-            good = db.GqlQuery("SELECT * "
-                               "FROM Good "
-                               "WHERE code = :1 ",
-                               barcode).fetch(1)
-            if len(good) > 0:
-                good = good[0]
-                prices = Price.query(Price.good == good, Price.store.IN(stores)).order(Price.price)
+            good = Good.query(Good.code == barcode).get()
+            if good is not None:
+                prices = Price.query(Price.good == good.key, Price.store.IN(map(lambda x: x.key, stores))).order(
+                    Price.price)
 
-                array_of_prices = []
-                array_of_stores = []
-                stores_with_price = list()
-                for store in stores:
-                    array_of_stores.append(
-                        {'id': store.key().id(), 'name': store.name, 'lat': store.location.lat * 1e6,
-                         'lon': store.location.lon * 1e6,
-                         'date': store.date.strftime("%Y-%m-%d")})
-                for price in prices:
-                    try:
-                        obj1 = price.store
-                        array_of_prices.append(
-                            {'price': price.price, 'date': price.date.strftime("%Y-%m-%d"),
-                             'store': obj1.key().id()})
-                        stores_with_price.append(obj1.key().id())
-                    except db.ReferencePropertyResolveError:
-                        # Referenced entity was deleted or never existed.
-                        pass
+                array_of_prices = map(lambda price: {'price': price.price,
+                                                     'date': price.date.strftime("%Y-%m-%d"),
+                                                     'store': price.store.id()},
+                                      prices)
+                array_of_stores = map(
+                    lambda store: {'id': store.key.id(),
+                                   'name': store.name,
+                                   'lat': store.location.lat * 1e6,
+                                   'lon': store.location.lon * 1e6,
+                                   'date': store.date.strftime("%Y-%m-%d")},
+                    stores)
+                stores_with_price = map(lambda x: x.store.id(), prices)
                 array_of_stores = filter(lambda a: a['id'] in stores_with_price, array_of_stores)
-                return json_response({'code': good.code, 'id': good.key().id(), 'stores': array_of_stores,
+                return json_response({'code': good.code, 'id': good.key.id(), 'stores': array_of_stores,
                                       'prices': array_of_prices})
             else:
                 return json_response({})
